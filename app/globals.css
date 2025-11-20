@@ -1,0 +1,44 @@
+@import "tailwindcss";
+
+:root { color-scheme: light; }
+html, body, #__next { height: 100%; font-family: 'Pretendard Variable', 'Pretendard', sans-serif; }
+body { @apply bg-white text-gray-900; }
+a { @apply underline-offset-2; }
+button { @apply cursor-pointer; }
+
+:root {
+    --base-font-size: 16px; /* 기본 폰트 사이즈 */
+}
+
+html {
+    font-size: var(--base-font-size);
+}
+
+h3 {
+    @apply tracking-tighter text-2xl font-semibold text-gray-900;
+}
+
+h3 + p {
+    @apply mt-2 text-sm text-gray-600;
+}
+
+h4 {
+    @apply font-semibold! text-base;
+}
+
+section > div {
+    @apply max-w-5xl mx-auto px-6;
+}
+
+@media (max-width: 1024px) {
+    :root {
+        --base-font-size: 15px; /* Tablet 폰트 사이즈 */
+    }
+}
+
+@media (max-width: 640px) {
+    :root {
+        --base-font-size: 14px; /* Mobile 폰트 사이즈 */
+    }
+}
+
