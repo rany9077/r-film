@@ -8,10 +8,6 @@ import { addDoc, collection, serverTimestamp } from "firebase/firestore";
 import { db } from "@/lib/firebase";
 import { Post } from "@/types/post";
 import { listenMyPosts } from "@/lib/posts";
-import Header from "@/components/Header";
-import Footer from "@/components/Footer";
-import KakaoButton from "@/components/KakaoButton";
-import ContactButton from "@/components/ContactButton";
 import FadeInSection from "@/components/FadeInSection";
 import {ChevronDown, ChevronRight} from "lucide-react";
 
