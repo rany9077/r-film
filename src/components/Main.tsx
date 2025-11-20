@@ -29,7 +29,6 @@ const AUTHOR_UID = process.env.NEXT_PUBLIC_AUTHOR_UID;
 export default function Main() {
     const [mounted, setMounted] = useState(false);
     const [posts, setPosts] = useState<Post[]>([]);
-    const [query, setQuery] = useState("");
 
     // 마운트 가드 (SSR/CSR hydration 차이 방지)
     useEffect(() => {
@@ -122,15 +121,9 @@ export default function Main() {
     if (!mounted) {
         return (
             <div className="min-h-screen text-gray-900 overflow-hidden">
-                <Header
-                    query={""}
-                    onQueryChangeAction={() => {}}
-                    onClickWriteAction={() => {}}
-                />
                 <main className="max-w-4xl mx-auto px-4 py-6">
                     <div className="h-40 rounded-xl border bg-white/60 animate-pulse" />
                 </main>
-                <Footer />
             </div>
         );
     }
