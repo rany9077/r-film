@@ -297,9 +297,9 @@ export default function Main() {
                                         <div className="mb-2 inline-flex h-9 w-9 items-center justify-center rounded-full bg-purple-50 text-[#701eff]">
                                             <Icon className="w-5 h-5" strokeWidth={2.1} />
                                         </div>
-                                        <h3>
+                                        <h4>
                                             {item.title}
-                                        </h3>
+                                        </h4>
                                         <p className="mt-2 text-[12px] sm:text-sm text-gray-600 leading-relaxed">
                                             {item.description}
                                         </p>

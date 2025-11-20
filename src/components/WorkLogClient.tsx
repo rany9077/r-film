@@ -12,11 +12,13 @@ import WritePopup from "@/components/WritePopup";
 import ContactButton from "@/components/ContactButton";
 import { MdxPostMeta } from "@/lib/mdxPosts";
 import Link from "next/link";
+import Header from "@/components/Header";
 
 const AUTHOR_UID = process.env.NEXT_PUBLIC_AUTHOR_UID;
 
 type Props = {
     initialMdxPosts: MdxPostMeta[];
+    query: string;
 };
 
 type UnifiedPost = (Post & { source: "firebase" }) | MdxPostMeta;
@@ -82,7 +84,7 @@ export default function WorkLogClient({ initialMdxPosts }: Props) {
             ? all.filter((p) => {
                 const title = ("title" in p && p.title) || "";
                 const content =
-                    "content" in p && typeof p.content === "string"
+                    "content" in p && true
                         ? p.content
                         : "summary" in p
                             ? p.summary || ""
@@ -123,6 +125,10 @@ export default function WorkLogClient({ initialMdxPosts }: Props) {
 
     return (
         <div className="min-h-screen bg-gray-50 text-gray-900 overflow-hidden">
+            <Header
+                query={query}
+                onQueryChangeAction={setQuery}
+            />
             <main className="max-w-5xl mx-auto px-4 py-8 space-y-4">
                 <header className="mb-4">
                     <h2 className="text-2xl md:text-3xl font-bold mb-1">작업 일지</h2>

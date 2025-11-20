@@ -3,9 +3,7 @@ import "./globals.css";
 import React from "react";
 import localFont from "next/font/local";
 import { AuthProvider } from "@/contexts/AuthContext";
-import Header from "@/components/Header";
-import Footer from "@/components/Footer";
-import KakaoButton from "@/components/KakaoButton";
+import RootLayoutShell from "@/components/RootLayoutShell";
 
 
 export const metadata: Metadata = {
@@ -54,10 +52,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <html lang="ko" className={pretendard.variable}>
         <body suppressHydrationWarning>
         <AuthProvider>
-            <Header />
-            <main>{children}</main>
-            <KakaoButton/>
-            <Footer />
+            <RootLayoutShell>{children}</RootLayoutShell>
         </AuthProvider>
         </body>
         </html>
