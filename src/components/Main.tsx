@@ -148,7 +148,6 @@ export default function Main() {
                             className="object-cover"
                         />
 
-                        {/* 좌측 텍스트 가독성을 위한 그라디언트 오버레이 */}
                         <span className="absolute inset-0 bg-gradient-to-r from-white via-white/90 to-white/10" />
 
                         {/* 컨텐츠 래퍼 */}
