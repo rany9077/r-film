@@ -1,7 +1,8 @@
 "use client";
+
 import React, {useEffect, useState} from "react";
 import { addDoc, collection, serverTimestamp } from "firebase/firestore";
-import { db } from "@/lib/firebase";
+import { getDb } from "@/lib/firebase";
 import {ChevronDown} from "lucide-react";
 
 export default function ContactSection() {
@@ -32,6 +33,14 @@ export default function ContactSection() {
             alert("이름과 연락처를 입력해주세요.");
             return;
         }
+
+        const db = getDb();
+        if (!db) {
+            console.error("[ContactSection] Firestore is not available");
+            alert("문의 저장에 문제가 발생했습니다. 잠시 후 다시 시도해주세요.");
+            return;
+        }
+
         try {
             setBusy(true);
             await addDoc(collection(db, "inquiries"), {

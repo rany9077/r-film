@@ -1,4 +1,4 @@
-import { db, storage } from "@/lib/firebase";
+import { getDb, getStorageInstance } from "@/lib/firebase";
 import {
     addDoc,
     collection,
@@ -21,8 +21,16 @@ export type NewPost = {
 };
 
 export function listenMyPosts(uid: string, cb: (docs: any[]) => void) {
+    const db = getDb();
+    if (!db) {
+        // 서버나 잘못된 환경에서 호출되면 그냥 아무 것도 안 하는 unsubscribe 리턴
+        console.warn("[listenMyPosts] Firestore is not available");
+        return () => {};
+    }
+
     const col = collection(db, `users/${uid}/posts`);
     const q = query(col, orderBy("createdAt", "desc"));
+
     return onSnapshot(q, (snap) => {
         cb(snap.docs.map((d) => ({ id: d.id, ...(d.data() as any) })));
     });
@@ -34,18 +42,26 @@ export function listenMyPosts(uid: string, cb: (docs: any[]) => void) {
  * - imageUrls에 data URL 이 있으면 Storage에 업로드 후 Firestore에 실제 URL 저장
  */
 export async function createPost(uid: string, data: NewPost) {
-    const col = collection(db, `users/${uid}/posts`);
+    const db = getDb();
+    const storage = getStorageInstance();
+
+    if (!db || !storage) {
+        console.error("[createPost] Firestore or Storage is not available");
+        return;
+    }
+
+    const colRef = collection(db, `users/${uid}/posts`);
 
     const base = {
         title: data.title,
         content: data.content ?? "",
-        imageUrls: [] as string[], // 여러 장 URL을 담을 배열
+        imageUrls: [] as string[],
         createdAt: serverTimestamp(),
         updatedAt: serverTimestamp(),
     };
 
     // 1) 우선 문서 생성
-    const docRef = await addDoc(col, base);
+    const docRef = await addDoc(colRef, base);
 
     // 2) 이미지가 없으면 바로 리턴
     if (!data.imageUrls || data.imageUrls.length === 0) {
@@ -76,6 +92,7 @@ export async function createPost(uid: string, data: NewPost) {
     return docRef.id;
 }
 
+
 /**
  * 글 수정
  * - imageUrls가 넘어오면 배열 전체를 재구성
@@ -83,6 +100,14 @@ export async function createPost(uid: string, data: NewPost) {
  *   - 이미 URL인 항목은 그대로 유지
  */
 export async function updatePost(uid: string, id: string, data: NewPost) {
+    const db = getDb();
+    const storage = getStorageInstance();
+
+    if (!db || !storage) {
+        console.error("[updatePost] Firestore or Storage is not available");
+        return;
+    }
+
     const payload: any = {
         title: data.title,
         content: data.content ?? "",
@@ -97,13 +122,11 @@ export async function updatePost(uid: string, id: string, data: NewPost) {
             if (!val) continue;
 
             if (val.startsWith("data:")) {
-                // 새로 업로드 해야 하는 이미지
                 const storageRef = ref(storage, `images/${uid}/${id}_${i}.png`);
                 await uploadString(storageRef, val, "data_url");
                 const url = await getDownloadURL(storageRef);
                 finalUrls.push(url);
             } else {
-                // 이미 업로드된 URL 그대로 사용
                 finalUrls.push(val);
             }
         }
@@ -114,7 +137,11 @@ export async function updatePost(uid: string, id: string, data: NewPost) {
     await updateDoc(doc(db, `users/${uid}/posts/${id}`), payload);
 }
 
-/** 글 삭제 (Storage 이미지까지 지우려면 여기에 삭제 로직 추가 가능) */
 export async function deletePost(uid: string, id: string) {
+    const db = getDb();
+    if (!db) {
+        console.error("[deletePost] Firestore is not available");
+        return;
+    }
     await deleteDoc(doc(db, `users/${uid}/posts/${id}`));
 }

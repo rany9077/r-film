@@ -19,7 +19,6 @@ type HeaderProps = {
 export default function Header({
                                    query = "",
                                    onQueryChangeAction = () => {},
-                                   onClickWriteAction = () => {},
                                }: HeaderProps = {}) {
     const { user, signInWithGoogleAction, signOutAction } = useAuth();
     const [showSearch, setShowSearch] = useState(false);

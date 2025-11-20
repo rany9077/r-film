@@ -5,7 +5,7 @@ import React, { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { addDoc, collection, serverTimestamp } from "firebase/firestore";
-import { db } from "@/lib/firebase";
+import { getDb } from "@/lib/firebase";
 import { Post } from "@/types/post";
 import { listenMyPosts } from "@/lib/posts";
 import FadeInSection from "@/components/FadeInSection";
@@ -79,6 +79,13 @@ export default function Main() {
 
         if (!contactForm.name.trim() || !contactForm.phone.trim()) {
             alert("이름과 연락처를 입력해주세요.");
+            return;
+        }
+
+        const db = getDb();
+        if (!db) {
+            console.error("[handleContactSubmit] Firestore is not available");
+            alert("서버 환경에서 Firestore를 사용할 수 없습니다. 잠시 후 다시 시도해주세요.");
             return;
         }
 

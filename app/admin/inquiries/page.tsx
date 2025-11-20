@@ -12,7 +12,7 @@ import {
     deleteDoc,
     Timestamp,
 } from "firebase/firestore";
-import { db } from "@/lib/firebase";
+import { getDb } from "@/lib/firebase";
 import Header from "@/components/Header";
 
 // 관리자 UID (환경변수로 관리)
@@ -72,6 +72,13 @@ export default function InquiriesAdminPage() {
         // 로그인 + 관리자일 때만 로직 실행
         if (!initialized || !isAdmin) return;
 
+        const db = getDb();
+        if (!db) {
+            console.error("[InquiriesAdminPage] Firestore is not available");
+            setLoading(false);
+            return;
+        }
+
         const col = collection(db, "inquiries");
         const qy = query(col, orderBy("createdAt", "desc"));
 
@@ -122,11 +129,24 @@ export default function InquiriesAdminPage() {
     // ────────────────────────────────────────────────────────────────
     //
     async function changeStatus(id: string, next: NonNullable<Inquiry["status"]>) {
+        const db = getDb();
+        if (!db) {
+            console.error("[InquiriesAdminPage] Firestore is not available (changeStatus)");
+            return;
+        }
+
         await updateDoc(doc(db, "inquiries", id), { status: next });
     }
 
     async function remove(id: string) {
         if (!confirm("이 문의를 삭제할까요?")) return;
+
+        const db = getDb();
+        if (!db) {
+            console.error("[InquiriesAdminPage] Firestore is not available (remove)");
+            return;
+        }
+
         await deleteDoc(doc(db, "inquiries", id));
     }
 
@@ -155,13 +175,6 @@ export default function InquiriesAdminPage() {
 
     return (
         <>
-            {/* 공통 헤더 */}
-            <Header
-                query={""}
-                onQueryChangeAction={() => {}}
-                onClickWriteAction={() => {}}
-            />
-
             <main className="max-w-5xl mx-auto px-4 py-8 space-y-6">
                 {/* 상단 헤더 + 필터 */}
                 <header className="flex flex-wrap items-center gap-3">

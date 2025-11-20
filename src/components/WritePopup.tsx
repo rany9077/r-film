@@ -1,6 +1,5 @@
 "use client";
 import React, { useRef, useState } from "react";
-import ImagePreview from "@/components/ImagePreview";
 import { fileToDataUrl } from "@/lib/utils";
 
 export default function WritePopup({
