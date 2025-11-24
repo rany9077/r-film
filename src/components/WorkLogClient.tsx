@@ -181,7 +181,7 @@ export default function WorkLogClient({ initialMdxPosts }: Props) {
 
                                         {/* 썸네일 영역 */}
                                         {post.coverImage && (
-                                            <div className="relative w-full h-40 sm:h-48 md:h-52 mt-4">
+                                            <div className="relative w-full h-50 sm:h-58 md:h-62 mt-4">
                                                 <Image
                                                     src={post.coverImage}
                                                     alt={post.title}
