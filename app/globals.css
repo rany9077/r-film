@@ -30,8 +30,24 @@ section > div {
     @apply max-w-5xl mx-auto px-6;
 }
 
+.prose h2 {
+    @apply mt-1 font-normal text-base;
+}
+
+.prose h3 {
+    @apply mt-3 mb-1 font-semibold text-base;
+}
+
 .prose h4 {
-    @apply mt-4
+    @apply mt-3 mb-1 text-base font-medium!;
+}
+
+.prose h3 + p {
+    @apply mt-0 text-black text-base;
+}
+
+.prose p {
+    @apply leading-normal! mb-1 text-gray-900;
 }
 
 @media (max-width: 1024px) {
