@@ -30,6 +30,10 @@ section > div {
     @apply max-w-5xl mx-auto px-6;
 }
 
+.prose h4 {
+    @apply mt-4
+}
+
 @media (max-width: 1024px) {
     :root {
         --base-font-size: 15px; /* Tablet 폰트 사이즈 */

@@ -1,4 +1,3 @@
-// app/log/[slug]/page.tsx
 import { notFound } from "next/navigation";
 import { getAllMdxPosts, getMdxPostBySlug } from "@/lib/mdxPosts";
 import Image from "next/image";

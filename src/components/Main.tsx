@@ -189,7 +189,7 @@ export default function Main() {
                                     <div
                                         className="rounded-xl bg-white/90 border border-white/80 px-3 py-3 sm:px-4 sm:py-4 shadow-sm">
                                         <RollingNumber
-                                            value={100}
+                                            value={10}
                                             suffix="+"
                                             className="text-base sm:text-lg font-bold text-gray-900"
                                         />
@@ -207,7 +207,7 @@ export default function Main() {
                                     <div
                                         className="rounded-xl bg-white/90 border border-white/80 px-3 py-3 sm:px-4 sm:py-4 shadow-sm">
                                         <RollingNumber
-                                            value={10}
+                                            value={1}
                                             suffix="년"
                                             className="text-base sm:text-lg font-bold text-gray-900"
                                         />
@@ -259,12 +259,12 @@ export default function Main() {
                                             <div className="inline-flex items-center rounded-full bg-purple-50 px-3 py-1 text-[12px] font-medium text-[#701eff] mb-3">
                                                 {item.tag}
                                             </div>
-                                            <button
-                                                type="button"
-                                                className="w-full text-sm sm:text-md rounded-full bg-[#7c49d4] text-white py-2 font-medium hover:bg-[#701eff] transition-colors"
-                                            >
-                                                {item.cta}
-                                            </button>
+                                            {/*<button*/}
+                                            {/*    type="button"*/}
+                                            {/*    className="w-full text-sm sm:text-md rounded-full bg-[#7c49d4] text-white py-2 font-medium hover:bg-[#701eff] transition-colors"*/}
+                                            {/*>*/}
+                                            {/*    {item.cta}*/}
+                                            {/*</button>*/}
                                         </div>
                                     </div>
                                 </article>
