@@ -38,13 +38,22 @@ export type FaqItem = {
 // 1) 제품 라인업
 export const PRODUCT_LINEUP: ProductItem[] = [
     {
+        key: "solid",
+        title: "솔리드 필름",
+        description:
+            "가구 면이나 문짝, 벽면 등을 심플하게 연출하고 싶을 때 적용할 수 있습니다.",
+        tag: "가구·문짝·벽면",
+        cta: "시공 사례 보기",
+        image: "/product_solid.jpg",
+    },
+    {
         key: "wood",
         title: "우드 패턴 필름",
         description:
             "내추럴한 결감으로 가장 무난하게 사용할 수 있는 우드 계열 필름입니다.",
         tag: "현관·방문·붙박이장",
         cta: "시공 사례 보기",
-        image: "/product_wood.jpg",
+        image: "/product_wood_v3.jpg",
     },
     {
         key: "marble",
@@ -53,7 +62,7 @@ export const PRODUCT_LINEUP: ProductItem[] = [
             "화이트·그레이 계열의 마블 텍스처로, 주방/욕실 포인트에 많이 쓰입니다.",
         tag: "주방 상판·벽면 포인트",
         cta: "시공 사례 보기",
-        image: "/product_marble.jpg",
+        image: "/product_marble_v2.jpg",
     },
     {
         key: "metal",
@@ -62,7 +71,7 @@ export const PRODUCT_LINEUP: ProductItem[] = [
             "살짝 광택이 도는 메탈 계열 필름으로, 모던한 상업 공간과 잘 어울립니다.",
         tag: "카운터·가구 래핑",
         cta: "시공 사례 보기",
-        image: "/product_metal.jpg",
+        image: "/product_metal_v2.jpg",
     },
     {
         key: "fabric",
@@ -71,25 +80,16 @@ export const PRODUCT_LINEUP: ProductItem[] = [
             "부드러운 패브릭 질감으로, 침실·거실에 잔잔한 포인트를 줄 때 좋습니다.",
         tag: "침실·거실 포인트",
         cta: "시공 사례 보기",
-        image: "/product_fabric.jpg",
+        image: "/product_fabric_v2.jpg",
     },
     {
         key: "concrete",
         title: "콘크리트 패턴 필름",
         description:
-            "무채색 톤의 콘크리트 질감으로, 카페·스튜디오에 많이 사용되는 타입입니다.",
-        tag: "카페·스튜디오",
+            "무채색 톤의 콘크리트 질감으로, 카페·스튜디오에 자주 사용되는 인더스트리얼 무드의 필름입니다.",
+        tag: "카페·스튜디오·포인트 벽면",
         cta: "시공 사례 보기",
         image: "/product_concrete.jpg",
-    },
-    {
-        key: "tile",
-        title: "타일 패턴 필름",
-        description:
-            "욕실이나 주방에 타일 느낌을 내고 싶을 때, 비교적 가볍게 적용할 수 있습니다.",
-        tag: "욕실·주방 벽면",
-        cta: "시공 사례 보기",
-        image: "/product_tile.jpg",
     },
 ];
 

@@ -9,7 +9,7 @@ import { getDb } from "@/lib/firebase";
 import { Post } from "@/types/post";
 import { listenMyPosts } from "@/lib/posts";
 import FadeInSection from "@/components/FadeInSection";
-import {ChevronDown, ChevronRight} from "lucide-react";
+import {ChevronDown, ChevronRight, Plus } from "lucide-react";
 
 import {
     PRODUCT_LINEUP,
@@ -177,7 +177,7 @@ export default function Main() {
                                         무료 상담 받기
                                     </Link>
                                     <Link
-                                        href="#products"
+                                        href="/log"
                                         className="inline-flex items-center justify-center rounded-full border border-gray-300 bg-white/80 backdrop-blur px-6 py-2.5 text-sm sm:text-base font-medium text-gray-700 hover:bg-black hover:text-white transition-colors"
                                     >
                                         시공 갤러리 보기
@@ -429,8 +429,13 @@ export default function Main() {
                                                 {item.q}
                                             </span>
                                                 <span className="transition-transform">
-                                                <span className="group-open:hidden">➕</span>
-                                                <span className="hidden group-open:inline">➖</span>
+                                                <Plus
+                                                    className="
+                                                        w-4 h-4
+                                                        transition-transform duration-200
+                                                        group-open:rotate-45
+                                                    "
+                                                />
                                             </span>
                                             </summary>
                                             <p className="px-4 sm:px-6 pb-4 text-sm text-gray-600 leading-relaxed">
