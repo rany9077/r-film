@@ -166,31 +166,37 @@ export default function WorkLogClient({ initialMdxPosts }: Props) {
                                     href={`/log/${post.id}`}
                                     className="rounded-2xl border border-gray-200 p-5 bg-white shadow-sm overflow-hidden"
                                 >
-                                    {/* 썸네일 영역 */}
-                                    {post.coverImage && (
-                                        <div className="relative w-full h-40 sm:h-48 md:h-52">
-                                            <Image
-                                                src={post.coverImage}
-                                                alt={post.title}
-                                                fill
-                                                sizes="(max-width: 640px) 100vw,
-                                                   (max-width: 1024px) 50vw,
-                                                   33vw"
-                                                className="object-cover rounded-lg"
-                                            />
-                                        </div>
-                                    )}
-                                    <div className="p-4">
-                                        <h2 className="text-lg font-semibold text-gray-900">
+                                    <div>
+                                        <h2 className="text-lg font-semibold text-gray-900 pb-2">
                                             {post.title}
                                         </h2>
-                                        <div className="text-xs text-gray-400 mb-1">
-                                            {new Date(post.createdAt).toLocaleDateString("ko-KR")}
+                                        <div className="text-xs text-gray-400">
+                                        {new Date(post.createdAt).toLocaleDateString("ko-KR")}
                                         </div>
                                         {post.summary && (
                                             <p className="mt-2 text-sm text-gray-600 line-clamp-2">
                                                 {post.summary}
                                             </p>
+                                        )}
+
+                                        {/* 썸네일 영역 */}
+                                        {post.coverImage && (
+                                            <div className="relative w-full h-40 sm:h-48 md:h-52 mt-4">
+                                                <Image
+                                                    src={post.coverImage}
+                                                    alt={post.title}
+                                                    fill
+                                                    sizes="(max-width: 640px) 100vw,
+                                                   (max-width: 1024px) 50vw,
+                                                   33vw"
+                                                    className="object-cover rounded-lg"
+                                                />
+                                                <div
+                                                    className="absolute inset-0 flex items-center justify-center bg-black/30 rounded-lg">
+                                                    <span className="text-white/70 text-sm">자세히 보기</span>
+                                                </div>
+                                            </div>
+
                                         )}
                                     </div>
                                 </Link>

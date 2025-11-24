@@ -1,4 +1,3 @@
-// app/log/[slug]/page.tsx
 import { notFound } from "next/navigation";
 import { getAllMdxPosts, getMdxPostBySlug } from "@/lib/mdxPosts";
 import Image from "next/image";
@@ -30,7 +29,7 @@ export default async function LogDetailPage({ params }: PageProps) {
     const { frontmatter, content } = post;
 
     return (
-        <main className="max-w-5xl mx-auto px-6 py-10">
+        <main className="max-w-5xl mx-auto px-6 py-20">
             <header className="mb-8">
                 <p className="text-xs text-gray-400">
                     작업 일지 ·{" "}
