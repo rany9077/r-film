@@ -16,8 +16,8 @@ export default function ImageRow({ images }: { images: Item[] }) {
                     <Image
                         src={img.src}
                         alt={img.alt}
-                        width={300}
-                        height={220}
+                        width={384}
+                        height={512}
                         className="rounded-xl shadow-md w-auto h-auto max-w-full"
                     />
                     {img.label && (
