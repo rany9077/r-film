@@ -23,9 +23,9 @@ export const metadata: Metadata = {
         siteName: "R.FILM",
         images: [
             {
-                url: "/logo.png", // 메인 상단 이미지를 기반으로 하나 만들어두면 좋아요
-                width: 1200,
-                height: 630,
+                url: "/thum.jpg",
+                width: 216,
+                height: 78,
                 alt: "R.FILM 인테리어 필름 시공",
             },
         ],
