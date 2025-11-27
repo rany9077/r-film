@@ -13,7 +13,7 @@ export const metadata: Metadata = {
         template: "%s | R.FILM",
     },
     description:
-        "도어, 가구, 주방, 몰딩까지 과하지 않은 리폼을 지향하는 인테리어 필름 스튜디오 R.FILM입니다.",
+        "도어, 가구, 주방, 몰딩까지 과하지 않은 리폼을 지향하는 인테리어 필름 스튜디오 R.FILM 입니다.",
     openGraph: {
         type: "website",
         url: "https://ran-film.com",
@@ -23,9 +23,9 @@ export const metadata: Metadata = {
         siteName: "R.FILM",
         images: [
             {
-                url: "/thum.jpg",
-                width: 216,
-                height: 78,
+                url: "/thum_v3.jpg",
+                width: 800,
+                height: 400,
                 alt: "R.FILM 인테리어 필름 시공",
             },
         ],
