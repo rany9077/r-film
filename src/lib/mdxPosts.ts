@@ -1,23 +1,14 @@
-// lib/mdxPosts.ts
 import fs from "fs";
 import path from "path";
 import matter from "gray-matter";
 import { compileMDX } from "next-mdx-remote/rsc";
 import Image from "next/image";
 import ImageRow from "@/components/mdx/ImageRow";
+import {MdxPost} from "@/types/post";
 
 const logsDir = path.join(process.cwd(), "content", "logs");
 
-export type MdxPostMeta = {
-    id: string;
-    title: string;
-    summary?: string;
-    createdAt: string;
-    coverImage?: string | null;
-    source: "mdx";
-};
-
-export async function getAllMdxPosts(): Promise<MdxPostMeta[]> {
+export async function getAllMdxPosts(): Promise<MdxPost[]> {
     if (!fs.existsSync(logsDir)) return [];
 
     const files = fs.readdirSync(logsDir);
@@ -48,7 +39,7 @@ export async function getAllMdxPosts(): Promise<MdxPostMeta[]> {
     return posts;
 }
 
-// 🔥 slug로 MDX 하나 가져오기 + 실제 내용 컴파일
+// slug로 MDX 하나 가져오기 + 실제 내용 컴파일
 export async function getMdxPostBySlug(slug: string) {
     const fullPath = path.join(logsDir, `${slug}.mdx`);
 

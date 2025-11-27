@@ -1,6 +1,5 @@
 import type { Post } from "@/types/post";
 import ImagePreview from "@/components/ImagePreview";
-import { formatDate } from "@/lib/utils";
 
 export default function PostCard({
                                      post,
@@ -37,10 +36,7 @@ export default function PostCard({
                 )}
             </header>
 
-            <p className="text-xs text-gray-400 mt-1">{formatDate(post.createdAt)}</p>
-
-            {/* 수정일은 필요하면 사용 */}
-            {/* <p className="text-xs text-gray-400 mt-1">수정 {formatDate(post.updatedAt)}</p> */}
+            <p className="text-xs text-gray-400 mt-1">{new Date(post.createdAt).toLocaleDateString("ko-KR")}</p>
 
             {post.imageUrls && post.imageUrls.length > 0 && (
                 <div className="mt-4">

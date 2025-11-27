@@ -3,12 +3,12 @@
 import { Plus } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 
-const AUTHOR_UID = process.env.NEXT_PUBLIC_AUTHOR_UID;
+const AUTHOR_UID = process.env.NEXT_PUBLIC_ADMIN_UID;
 
 export default ({onClick}: { onClick: () => void }) => {
     const { user } = useAuth();
 
-    const isAuthor = !!user && user.uid === AUTHOR_UID;
+    const isAuthor = !!user && user.id === AUTHOR_UID;
 
     if (!isAuthor) return null; // 작성자만 노출
 
