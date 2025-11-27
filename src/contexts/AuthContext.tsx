@@ -1,4 +1,5 @@
 "use client";
+
 import React, {
     createContext,
     useContext,
@@ -7,18 +8,11 @@ import React, {
     useRef,
     useState,
 } from "react";
-import {
-    onAuthStateChanged,
-    signInWithPopup,
-    signOut,
-    User,
-    setPersistence,
-    browserLocalPersistence,
-} from "firebase/auth";
-import { getAuthInstance, getGoogleProvider } from "@/lib/firebase";
+import type { User as SupabaseUser } from "@supabase/supabase-js";
+import { getSupabaseClient } from "@/lib/supabaseClient";
 
 type Ctx = {
-    user: User | null;
+    user: SupabaseUser | null;
     loading: boolean;
     initialized: boolean;
     signInWithGoogleAction: () => Promise<void>;
@@ -29,21 +23,42 @@ const AuthContext = createContext<Ctx | undefined>(undefined);
 
 // === 설정값 & 키 ===
 const AUTO_LOGOUT_MS = 2 * 60 * 60 * 1000; // 2시간
-const LS_KEY_LOGIN_AT = "auth:loginAt"; // 로그인 기준 시각 (epoch ms)
+const LS_KEY_LOGIN_AT = "auth:loginAt";
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
-    const [user, setUser] = useState<User | null>(null);
+    const [user, setUser] = useState<SupabaseUser | null>(null);
     const [loading, setLoading] = useState(false);
     const [initialized, setInitialized] = useState(false);
 
-    // 탭 전체 동기화를 위한 타이머, 정리용 ref
     const logoutTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
-    // --- 타이머 관리 도우미 ---
     const clearLogoutTimer = () => {
         if (logoutTimerRef.current) {
             clearTimeout(logoutTimerRef.current);
             logoutTimerRef.current = null;
+        }
+    };
+
+    const signOutAction = async () => {
+        const supabase = getSupabaseClient();
+        if (!supabase) {
+            clearLogoutTimer();
+            localStorage.removeItem(LS_KEY_LOGIN_AT);
+            setUser(null);
+            return;
+        }
+
+        setLoading(true);
+        try {
+            const { error } = await supabase.auth.signOut();
+            if (error) {
+                console.error("[Auth] signOut error", error);
+            }
+        } finally {
+            setLoading(false);
+            clearLogoutTimer();
+            localStorage.removeItem(LS_KEY_LOGIN_AT);
+            setUser(null);
         }
     };
 
@@ -57,32 +72,60 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         const remain = AUTO_LOGOUT_MS - elapsed;
 
         if (remain <= 0) {
-            // 이미 만료
-            signOutAction();
+            void signOutAction();
             return;
         }
 
         logoutTimerRef.current = setTimeout(() => {
-            signOutAction();
+            void signOutAction();
         }, remain);
     };
 
-    // 초기 auth 상태 구독
+    // 초기 세션 + 상태 구독
     useEffect(() => {
-        const auth = getAuthInstance();
-        if (!auth) {
-            // 브라우저가 아니거나 Firebase 초기화 실패
+        const supabase = getSupabaseClient();
+        if (!supabase) {
             setInitialized(true);
             return;
         }
 
-        setPersistence(auth, browserLocalPersistence).catch(() => {});
+        let cancelled = false;
 
-        const unsub = onAuthStateChanged(auth, (u) => {
-            setUser(u);
+        const initAuth = async () => {
+            // ✅ 세션 먼저 확인 (세션이 없어도 에러 안 남)
+            const { data, error } = await supabase.auth.getSession();
+            if (error) {
+                console.error("[Auth] getSession error", error);
+            }
+
+            if (cancelled) return;
+
+            const session = data.session ?? null;
+            const currentUser = session?.user ?? null;
+            setUser(currentUser);
             setInitialized(true);
 
-            if (u) {
+            if (currentUser) {
+                if (!localStorage.getItem(LS_KEY_LOGIN_AT)) {
+                    localStorage.setItem(LS_KEY_LOGIN_AT, String(Date.now()));
+                }
+                scheduleAutoLogout();
+            } else {
+                clearLogoutTimer();
+                localStorage.removeItem(LS_KEY_LOGIN_AT);
+            }
+        };
+
+        void initAuth();
+
+        // 이후 상태 변화는 onAuthStateChange에서 처리
+        const {
+            data: { subscription },
+        } = supabase.auth.onAuthStateChange((_event, session) => {
+            const currentUser = session?.user ?? null;
+            setUser(currentUser);
+
+            if (currentUser) {
                 if (!localStorage.getItem(LS_KEY_LOGIN_AT)) {
                     localStorage.setItem(LS_KEY_LOGIN_AT, String(Date.now()));
                 }
@@ -94,23 +137,18 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         });
 
         return () => {
-            unsub();
+            cancelled = true;
+            subscription.unsubscribe();
             clearLogoutTimer();
         };
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
-    // 탭 간 동기화를 위해 storage 이벤트 수신
+    // 탭 동기화
     useEffect(() => {
         const onStorage = (e: StorageEvent) => {
             if (e.key === LS_KEY_LOGIN_AT) {
-                const auth = getAuthInstance();
-                if (!auth) {
-                    clearLogoutTimer();
-                    return;
-                }
-
-                if (auth.currentUser && localStorage.getItem(LS_KEY_LOGIN_AT)) {
+                if (localStorage.getItem(LS_KEY_LOGIN_AT)) {
                     scheduleAutoLogout();
                 } else {
                     clearLogoutTimer();
@@ -123,39 +161,28 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     }, []);
 
     const signInWithGoogleAction = async () => {
-        const auth = getAuthInstance();
-        const provider = getGoogleProvider();
-
-        if (!auth || !provider) {
-            console.error("[Auth] Auth or GoogleProvider not available");
+        const supabase = getSupabaseClient();
+        if (!supabase) {
+            console.error("[Auth] Supabase client not available");
             return;
         }
 
         setLoading(true);
         try {
-            await signInWithPopup(auth, provider);
-            localStorage.setItem(LS_KEY_LOGIN_AT, String(Date.now()));
-            scheduleAutoLogout();
+            const { error } = await supabase.auth.signInWithOAuth({
+                provider: "google",
+                options: {
+                    redirectTo: `${window.location.origin}/auth/callback`,
+                },
+            });
+
+            if (error) {
+                console.error("[Auth] signInWithGoogle error", error);
+                alert("로그인에 실패했습니다. 잠시 후 다시 시도해주세요.");
+            }
+            // 세션 저장은 /auth/callback + onAuthStateChange에서 처리
         } finally {
             setLoading(false);
-        }
-    };
-
-    const signOutAction = async () => {
-        const auth = getAuthInstance();
-        if (!auth) {
-            clearLogoutTimer();
-            localStorage.removeItem(LS_KEY_LOGIN_AT);
-            return;
-        }
-
-        setLoading(true);
-        try {
-            await signOut(auth);
-        } finally {
-            setLoading(false);
-            clearLogoutTimer();
-            localStorage.removeItem(LS_KEY_LOGIN_AT);
         }
     };
 

@@ -4,8 +4,6 @@ import React, { useEffect, useMemo, useState } from "react";
 
 import Link from "next/link";
 import Image from "next/image";
-import { addDoc, collection, serverTimestamp } from "firebase/firestore";
-import { getDb } from "@/lib/firebase";
 import { Post } from "@/types/post";
 import { listenMyPosts } from "@/lib/posts";
 import FadeInSection from "@/components/FadeInSection";
@@ -18,8 +16,9 @@ import {
     FAQ_ITEMS,
 } from "@/constants/mainPage";
 import {RollingNumber} from "@/components/RollingNumber";
+import {getSupabaseClient} from "@/lib/supabaseClient";
 
-const AUTHOR_UID = process.env.NEXT_PUBLIC_AUTHOR_UID;
+const AUTHOR_UID = process.env.NEXT_PUBLIC_ADMIN_UID;
 
 
 export default function Main() {
@@ -51,59 +50,63 @@ export default function Main() {
         return unique.slice(0, 6); // 최대 6개만 노출
     }, [posts]);
 
-    const [contactForm, setContactForm] = useState({
+    const [form, setForm] = useState({
         name: "",
         phone: "",
         kakaoId: "",
         message: "",
         budget: "",
-        spaceType: "door", // 기본값
+        spaceType: "door",
         honey: "",
     });
-    const [contactBusy, setContactBusy] = useState(false);
-    const [contactDone, setContactDone] = useState(false);
+    const [busy, setBusy] = useState(false);
+    const [done, setDone] = useState(false);
 
-    // 4초 뒤 성공 메시지 자동 숨김
+    // 4초 뒤 메시지 자동 숨김
     useEffect(() => {
-        if (contactDone) {
-            const timer = setTimeout(() => setContactDone(false), 4000);
+        if (done) {
+            const timer = setTimeout(() => setDone(false), 4000);
             return () => clearTimeout(timer);
         }
-    }, [contactDone]);
+    }, [done]);
 
-    async function handleContactSubmit(e: React.FormEvent) {
+    async function onSubmit(e: React.FormEvent) {
         e.preventDefault();
-
-        // 봇 방지 필드에 값이 있으면 무시
-        if (contactForm.honey) return;
-
-        if (!contactForm.name.trim() || !contactForm.phone.trim()) {
+        if (form.honey) return;
+        if (!form.name.trim() || !form.phone.trim()) {
             alert("이름과 연락처를 입력해주세요.");
             return;
         }
 
-        const db = getDb();
-        if (!db) {
-            console.error("[handleContactSubmit] Firestore is not available");
-            alert("서버 환경에서 Firestore를 사용할 수 없습니다. 잠시 후 다시 시도해주세요.");
+        const supabase = getSupabaseClient();
+        if (!supabase) {
+            console.error("[ContactSection] Supabase client is not available");
+            alert("문의 저장에 문제가 발생했습니다. 잠시 후 다시 시도해주세요.");
             return;
         }
 
         try {
-            setContactBusy(true);
-            await addDoc(collection(db, "inquiries"), {
-                name: contactForm.name.trim(),
-                phone: contactForm.phone.trim() || null,
-                kakaoId: contactForm.kakaoId.trim() || null,
-                message: contactForm.message.trim(),
-                budget: contactForm.budget.trim() || null,
-                spaceType: contactForm.spaceType,
-                createdAt: serverTimestamp(),
+            setBusy(true);
+            const {error} = await supabase.from("inquiries").insert({
+                name: form.name.trim(),
+                phone: form.phone.trim() || null,
+                kakao_id: form.kakaoId.trim() || null, // 컬럼명을 kakao_id 로 가정
+                message: form.message.trim(),
+                budget: form.budget.trim() || null,
+                space_type: form.spaceType,
                 status: "new",
+                // created_at 은 DB 디폴트 now() 로 두면 생략 가능
+                created_at: new Date().toISOString(),
             });
 
-            setContactDone(true);
-            setContactForm({
+            if (error) {
+                console.error("[ContactSection] insert error", error);
+                alert("문의 접수에 실패했습니다. 잠시 후 다시 시도해주세요.");
+                return;
+            }
+
+            setDone(true);
+            setForm({
                 name: "",
                 phone: "",
                 kakaoId: "",
@@ -116,19 +119,19 @@ export default function Main() {
             console.error(err);
             alert("문의 접수에 실패했습니다. 잠시 후 다시 시도해주세요.");
         } finally {
-            setContactBusy(false);
+            setBusy(false);
         }
-    }
 
-    // 초기 스켈레톤
-    if (!mounted) {
-        return (
-            <div className="min-h-screen text-gray-900 overflow-hidden">
-                <main className="max-w-4xl mx-auto px-4 py-6">
-                    <div className="h-40 rounded-xl border bg-white/60 animate-pulse" />
-                </main>
-            </div>
-        );
+        // 초기 스켈레톤
+        if (!mounted) {
+            return (
+                <div className="min-h-screen text-gray-900 overflow-hidden">
+                    <main className="max-w-4xl mx-auto px-4 py-6">
+                        <div className="h-40 rounded-xl border bg-white/60 animate-pulse"/>
+                    </main>
+                </div>
+            );
+        }
     }
 
     return (
@@ -483,13 +486,13 @@ export default function Main() {
                             </div>
                             <form
                                 className="rounded-xl bg-white text-gray-900 px-5 py-6 sm:px-6 sm:py-7 shadow-xl"
-                                onSubmit={handleContactSubmit}
+                                onSubmit={onSubmit}
                             >
                                 <h3>
                                     상담 신청하기
                                 </h3>
 
-                                {contactDone && (
+                                {done && (
                                     <div
                                         className="mb-4 rounded-xl border border-purple-200 bg-purple-50 px-4 py-3 text-sm sm:text-base text-purple-800">
                                         ✔️ 문의가 접수되었습니다! 확인 후 연락드릴게요.
@@ -500,9 +503,9 @@ export default function Main() {
                                 <input
                                     tabIndex={-1}
                                     autoComplete="off"
-                                    value={contactForm.honey}
+                                    value={form.honey}
                                     onChange={(e) =>
-                                        setContactForm({...contactForm, honey: e.target.value})
+                                        setForm({...form, honey: e.target.value})
                                     }
                                     className="hidden"
                                 />
@@ -511,14 +514,14 @@ export default function Main() {
                                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                                         <div>
                                             <label className="block mb-1 font-medium text-gray-800 text-sm">
-                                                이름 *
+                                            이름 *
                                             </label>
                                             <input
                                                 className="w-full rounded-lg border border-gray-200 px-3 py-2 outline-none text-sm focus:ring-1 focus:ring-[#701eff]/70 focus:border-[#701eff]"
-                                                value={contactForm.name}
+                                                value={form.name}
                                                 onChange={(e) =>
-                                                    setContactForm({
-                                                        ...contactForm,
+                                                    setForm({
+                                                        ...form,
                                                         name: e.target.value,
                                                     })
                                                 }
@@ -532,10 +535,10 @@ export default function Main() {
                                             </label>
                                             <input
                                                 className="w-full rounded-lg border border-gray-200 px-3 py-2 outline-none text-sm focus:ring-1 focus:ring-[#701eff]/70 focus:border-[#701eff]"
-                                                value={contactForm.phone}
+                                                value={form.phone}
                                                 onChange={(e) =>
-                                                    setContactForm({
-                                                        ...contactForm,
+                                                    setForm({
+                                                        ...form,
                                                         phone: e.target.value,
                                                     })
                                                 }
@@ -553,10 +556,10 @@ export default function Main() {
                                             </label>
                                             <input
                                                 className="w-full rounded-lg border border-gray-200 px-3 py-2 outline-none text-sm focus:ring-1 focus:ring-[#701eff]/70 focus:border-[#701eff]"
-                                                value={contactForm.kakaoId}
+                                                value={form.kakaoId}
                                                 onChange={(e) =>
-                                                    setContactForm({
-                                                        ...contactForm,
+                                                    setForm({
+                                                        ...form,
                                                         kakaoId: e.target.value,
                                                     })
                                                 }
@@ -569,10 +572,10 @@ export default function Main() {
                                             </label>
                                             <input
                                                 className="w-full rounded-lg border border-gray-200 px-3 py-2 outline-none text-sm focus:ring-1 focus:ring-[#701eff]/70 focus:border-[#701eff]"
-                                                value={contactForm.budget}
+                                                value={form.budget}
                                                 onChange={(e) =>
-                                                    setContactForm({
-                                                        ...contactForm,
+                                                    setForm({
+                                                        ...form,
                                                         budget: e.target.value,
                                                     })
                                                 }
@@ -591,10 +594,10 @@ export default function Main() {
                                               outline-none text-sm
                                               appearance-none
                                               focus:ring-1 focus:ring-[#701eff]/70 focus:border-[#701eff]"
-                                                value={contactForm.spaceType}
+                                                value={form.spaceType}
                                                 onChange={(e) =>
-                                                    setContactForm({
-                                                        ...contactForm,
+                                                    setForm({
+                                                        ...form,
                                                         spaceType: e.target.value,
                                                     })
                                                 }
@@ -619,10 +622,10 @@ export default function Main() {
                                         <textarea
                                             rows={3}
                                             className="w-full rounded-lg border border-gray-200 px-3 py-2 outline-none text-sm resize-none focus:ring-1 focus:ring-[#701eff]/70 focus:border-[#701eff]"
-                                            value={contactForm.message}
+                                            value={form.message}
                                             onChange={(e) =>
-                                                setContactForm({
-                                                    ...contactForm,
+                                                setForm({
+                                                    ...form,
                                                     message: e.target.value,
                                                 })
                                             }
@@ -632,10 +635,10 @@ export default function Main() {
 
                                     <button
                                         type="submit"
-                                        disabled={contactBusy}
+                                        disabled={busy}
                                         className="mt-2 w-full rounded-full text-white bg-[#7c49d4] px-6 py-2.5 text-sm sm:text-base font-semibold shadow-sm shadow-[#701eff94] hover:bg-[#701eff] transition-colors disabled:opacity-50"
                                     >
-                                        {contactBusy ? "전송 중…" : "무료 상담 신청"}
+                                        {busy ? "전송 중…" : "무료 상담 신청"}
                                     </button>
 
                                     <p className="text-sm text-gray-500 pt-1 tracking-tighter">

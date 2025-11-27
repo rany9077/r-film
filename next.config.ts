@@ -7,13 +7,11 @@ const nextConfig: NextConfig = {
     remotePatterns: [
       {
         protocol: "https",
-        hostname: "firebasestorage.googleapis.com",
-        port: "",
-        pathname: "/v0/b/**",
+        hostname: "lh3.googleusercontent.com", // 구글 업로드 이미지도 필요하면
       },
       {
         protocol: "https",
-        hostname: "lh3.googleusercontent.com", // 구글 업로드 이미지도 필요하면
+        hostname: "ggdnnyervtxxwkrpwycm.supabase.co", // supabase 업로드 이미지도 필요하면
       }
     ],
   },

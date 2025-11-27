@@ -5,42 +5,43 @@ import Image from "next/image";
 import PostCard from "@/components/PostCard";
 import NoResults from "@/components/NoResults";
 import { Post } from "@/types/post";
+import type { Post as SupabasePost } from "@/types/post";
 import { useAuth } from "@/contexts/AuthContext";
 import { listenMyPosts, deletePost, updatePost, createPost } from "@/lib/posts";
 import WriteButton from "@/components/WriteButton";
 import WritePopup from "@/components/WritePopup";
 import ContactButton from "@/components/ContactButton";
-import { MdxPostMeta } from "@/lib/mdxPosts";
+import { MdxPost } from "@/types/post";
 import Link from "next/link";
 import Header from "@/components/Header";
 
-const AUTHOR_UID = process.env.NEXT_PUBLIC_AUTHOR_UID;
+const AUTHOR_UID = process.env.NEXT_PUBLIC_ADMIN_UID;
 
 type Props = {
-    initialMdxPosts: MdxPostMeta[];
+    initialMdxPosts: MdxPost[];
     query: string;
 };
 
-type UnifiedPost = (Post & { source: "firebase" }) | MdxPostMeta;
+export type UnifiedPost = SupabasePost | MdxPost;
 
 export default function WorkLogClient({ initialMdxPosts }: Props) {
     const [mounted, setMounted] = useState(false);
-    const [firebasePosts, setFirebasePosts] = useState<Post[]>([]);
-    const [mdxPosts] = useState<MdxPostMeta[]>(initialMdxPosts);
+    const [supabasePosts, setSupabasePosts] = useState<Post[]>([]);
+    const [mdxPosts] = useState<MdxPost[]>(initialMdxPosts);
     const [query, setQuery] = useState("");
     const [editing, setEditing] = useState<Post | null>(null);
     const [open, setOpen] = useState(false);
 
     const { user } = useAuth();
-    const isAuthor = !!user && !!AUTHOR_UID && user.uid === AUTHOR_UID;
+    const isAuthor = !!user && !!AUTHOR_UID && user.id === AUTHOR_UID;
 
     useEffect(() => setMounted(true), []);
 
-    // Firebase 실시간 구독
+    // 실시간 구독
     useEffect(() => {
         if (!AUTHOR_UID) return;
         const unsub = listenMyPosts(AUTHOR_UID, (items) =>
-            setFirebasePosts(items as Post[])
+            setSupabasePosts(items as Post[])
         );
         return () => unsub && unsub();
     }, []);
@@ -69,14 +70,20 @@ export default function WorkLogClient({ initialMdxPosts }: Props) {
         await updatePost(AUTHOR_UID, (target as any).id, data);
     };
 
-    // Firebase + MDX 합치고 검색/정렬
-    const merged: UnifiedPost[] = useMemo(() => {
-        const firebaseWithSource: UnifiedPost[] = firebasePosts.map((p) => ({
-            ...p,
-            source: "firebase",
-        }));
+    const handleDeletePost = async (id: string) => {
+        if (!isAuthor || !AUTHOR_UID) return;
+        if (!confirm("정말 삭제하시겠습니까?")) return;
 
-        const all: UnifiedPost[] = [...mdxPosts, ...firebaseWithSource];
+        // 1) 낙관적 업데이트: 화면에서 먼저 제거
+        setSupabasePosts((prev) => prev.filter((post) => post.id !== id));
+
+        // 2) 실제 Supabase 삭제
+        await deletePost(AUTHOR_UID, id);
+    };
+
+    // supabase + MDX 합치고 검색/정렬
+    const merged: UnifiedPost[] = useMemo(() => {
+        const all: UnifiedPost[] = [...mdxPosts, ...supabasePosts];
 
         const q = query.trim().toLowerCase();
 
@@ -111,7 +118,7 @@ export default function WorkLogClient({ initialMdxPosts }: Props) {
         filtered.reverse();
 
         return filtered;
-    }, [firebasePosts, mdxPosts, query]);
+    }, [supabasePosts, mdxPosts, query]);
 
     if (!mounted) {
         return (
@@ -143,7 +150,8 @@ export default function WorkLogClient({ initialMdxPosts }: Props) {
                 ) : (
                     <div className="grid gap-4">
                         {merged.map((post) =>
-                            post.source === "firebase" ? (
+                            "content" in post ? (
+                                // Supabase 글
                                 <PostCard
                                     key={post.id}
                                     post={post}
@@ -157,10 +165,11 @@ export default function WorkLogClient({ initialMdxPosts }: Props) {
                                         if (!isAuthor || !AUTHOR_UID) return;
                                         if (!confirm("정말 삭제하시겠습니까?")) return;
                                         await deletePost(AUTHOR_UID, id);
+                                        await handleDeletePost(id);
                                     }}
                                 />
                             ) : (
-                                // MDX 포스트 카드 – 필요하다면 전용 카드 컴포넌트 만들어도 됨
+                                // MDX 글
                                 <Link
                                     key={post.id}
                                     href={`/log/${post.id}`}

@@ -1,4 +1,4 @@
-export type PostSource = "mdx" | "firebase";
+export type PostSource = "mdx" | "supabase";
 
 export type Post = {
     id: string;
@@ -9,4 +9,13 @@ export type Post = {
     createdAt: string;
     coverImage?: string;
     source: PostSource;
+};
+
+export type MdxPost = {
+    id: string;
+    title: string;
+    summary?: string;
+    createdAt: string;
+    coverImage?: string | null;
+    source: "mdx";
 };

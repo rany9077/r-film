@@ -28,7 +28,7 @@ export default function Header({
 
     // 로그인 여부
     const isLoggedIn = !!user;
-    const isAdmin = isLoggedIn && !!ADMIN_UID ? user!.uid === ADMIN_UID : false;
+    const isAdmin = isLoggedIn && !!ADMIN_UID ? user!.id === ADMIN_UID : false;
 
     return (
         <>
