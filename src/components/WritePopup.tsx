@@ -13,7 +13,7 @@ export default function WritePopup({
 }) {
     const [title, setTitle] = useState(initial?.title ?? "");
     const [content, setContent] = useState(initial?.content ?? "");
-    // 🔥 여러 장 이미지를 위한 state (기존 URL + 새로 추가된 dataURL 모두 포함)
+    // 여러 장 이미지를 위한 state (기존 URL + 새로 추가된 dataURL 모두 포함)
     const [images, setImages] = useState<string[]>(initial?.imageUrls ?? []);
     const fileRef = useRef<HTMLInputElement | null>(null);
 

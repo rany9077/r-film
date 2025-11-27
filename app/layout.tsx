@@ -7,7 +7,7 @@ import RootLayoutShell from "@/components/RootLayoutShell";
 
 
 export const metadata: Metadata = {
-    metadataBase: new URL("https://r-film.vercel.app/"), // 실제 도메인으로 수정
+    metadataBase: new URL("https://ran-film.com"), // 실제 도메인으로 수정
     title: {
         default: "R.FILM - 인테리어 필름 스튜디오",
         template: "%s | R.FILM",
@@ -16,7 +16,7 @@ export const metadata: Metadata = {
         "도어, 가구, 주방, 몰딩까지 과하지 않은 리폼을 지향하는 인테리어 필름 스튜디오 R.FILM입니다.",
     openGraph: {
         type: "website",
-        url: "https://r-film.vercel.app/m",
+        url: "https://ran-film.com",
         title: "R.FILM - 인테리어 필름 스튜디오",
         description:
             "주거·상업공간 인테리어 필름 시공, 실사례 기반 상담과 꼼꼼한 마감까지 함께 합니다.",
