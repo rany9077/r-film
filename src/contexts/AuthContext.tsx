@@ -92,7 +92,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         let cancelled = false;
 
         const initAuth = async () => {
-            // ✅ 세션 먼저 확인 (세션이 없어도 에러 안 남)
+            // 세션 먼저 확인 (세션이 없어도 에러 안 남)
             const { data, error } = await supabase.auth.getSession();
             if (error) {
                 console.error("[Auth] getSession error", error);

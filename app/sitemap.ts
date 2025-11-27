@@ -1,7 +1,7 @@
 import { MetadataRoute } from "next";
 
 export default function sitemap(): MetadataRoute.Sitemap {
-    const baseUrl = "https://r-film.example.com"; // 실제 도메인
+    const baseUrl = "https://ran-film.com"; // 실제 도메인
 
     return [
         {
