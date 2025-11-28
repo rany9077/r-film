@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { getAllMdxPosts, getMdxPostBySlug } from "@/lib/mdxPosts";
 import Image from "next/image";
@@ -15,6 +16,60 @@ export async function generateStaticParams() {
     return posts.map((post) => ({
         slug: post.id,
     }));
+}
+
+// 동적 메타데이터 (SEO)
+export async function generateMetadata(
+    { params }: PageProps
+): Promise<Metadata> {
+    const { slug } = await params; // ← 요 부분이 핵심!
+
+    const post = await getMdxPostBySlug(slug);
+
+    // 글이 없으면 인덱싱 안 되게 처리
+    if (!post) {
+        return {
+            title: "작업 일지를 찾을 수 없습니다",
+            description: "요청하신 작업 일지를 찾을 수 없습니다.",
+            robots: {
+                index: false,
+                follow: false,
+            },
+        };
+    }
+
+    const { frontmatter } = post;
+
+    const title = frontmatter.title ?? "작업 일지";
+    const description =
+        frontmatter.summary ??
+        "R.FILM 인테리어 필름 시공 작업 일지입니다.";
+    const date = frontmatter.date ?? undefined;
+    const coverImage = frontmatter.coverImage ?? undefined;
+
+    // RootLayout에서 metadataBase가 이미 설정되어 있으므로
+    // canonical은 상대 경로로만 적어줘도 됨 (자동으로 ran-film.com과 합쳐짐)
+    const canonicalPath = `/log/${slug}`;
+
+    return {
+        title,
+        description,
+        alternates: {
+            canonical: canonicalPath,
+        },
+        openGraph: {
+            type: "article",
+            url: canonicalPath,
+            title,
+            description,
+            images: coverImage ? [{ url: coverImage }] : undefined,
+        },
+        other: date
+            ? {
+                "article:published_time": date,
+            }
+            : undefined,
+    };
 }
 
 export default async function LogDetailPage({ params }: PageProps) {
