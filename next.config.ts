@@ -11,7 +11,8 @@ const nextConfig: NextConfig = {
       },
       {
         protocol: "https",
-        hostname: "ggdnnyervtxxwkrpwycm.supabase.co", // supabase 업로드 이미지도 필요하면
+        hostname: "ggdnnyervtxxwkrpwycm.supabase.co", // supabase 업로드 이미지도 필요하면+
+        pathname: "/storage/v1/object/public/**",
       }
     ],
   },
