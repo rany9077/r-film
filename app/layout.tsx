@@ -5,27 +5,30 @@ import localFont from "next/font/local";
 import { AuthProvider } from "@/contexts/AuthContext";
 import RootLayoutShell from "@/components/RootLayoutShell";
 
+const SITE_URL = "https://ran-film.com";
+const SITE_NAME = "R.FILM";
+const SITE_TITLE = "R.FILM - 인테리어 필름 스튜디오";
+const SITE_DESCRIPTION =
+    "도어, 가구, 주방, 몰딩까지 과하지 않은 리폼을 지향하는 인테리어 필름 스튜디오 R.FILM 입니다.";
 
 export const metadata: Metadata = {
-    metadataBase: new URL("https://ran-film.com"), // 실제 도메인으로 수정
+    metadataBase: new URL(SITE_URL),
     title: {
-        default: "R.FILM - 인테리어 필름 스튜디오",
-        template: "%s | R.FILM",
+        default: SITE_TITLE,
+        template: `%s | ${SITE_NAME}`,
     },
-    description:
-        "도어, 가구, 주방, 몰딩까지 과하지 않은 리폼을 지향하는 인테리어 필름 스튜디오 R.FILM 입니다.",
+    description: SITE_DESCRIPTION,
     openGraph: {
         type: "website",
-        url: "https://ran-film.com",
-        title: "R.FILM - 인테리어 필름 스튜디오",
-        description:
-            "주거·상업공간 인테리어 필름 시공, 실사례 기반 상담과 꼼꼼한 마감까지 함께 합니다.",
-        siteName: "R.FILM",
+        url: SITE_URL,
+        title: SITE_TITLE,
+        description: SITE_DESCRIPTION,
+        siteName: SITE_NAME,
         images: [
             {
                 url: "/thum_v3.jpg",
-                width: 800,
-                height: 400,
+                width: 1200,
+                height: 630,
                 alt: "R.FILM 인테리어 필름 시공",
             },
         ],
@@ -33,6 +36,15 @@ export const metadata: Metadata = {
     robots: {
         index: true,
         follow: true,
+    },
+    alternates: {
+        canonical: SITE_URL,
+    },
+    twitter: {
+        card: "summary_large_image",
+        title: SITE_TITLE,
+        description: SITE_DESCRIPTION,
+        images: ["/thum_v3.jpg"],
     },
 };
 

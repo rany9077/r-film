@@ -6,6 +6,6 @@ export default function robots(): MetadataRoute.Robots {
             userAgent: "*",
             allow: "/",
         },
-        sitemap: "https://r-film.example.com/sitemap.xml", // 실제 도메인
+        sitemap: "https://ran-film.com/sitemap.xml", // ← 이렇게!
     };
 }
