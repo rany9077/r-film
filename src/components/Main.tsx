@@ -144,7 +144,7 @@ export default function Main() {
                     >
                         {/* 배경 이미지 */}
                         <Image
-                            src="/main.jpg"
+                            src="/main_v2.jpg"
                             alt="인테리어 필름 시공된 거실 이미지"
                             fill
                             priority
