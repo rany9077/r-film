@@ -101,18 +101,18 @@ export default async function LogDetailPage({ params }: PageProps) {
                     </p>
                 )}
 
-                {frontmatter.coverImage && (
-                    <div className="relative w-full h-64 md:h-80 mt-6 rounded-xl overflow-hidden">
-                        <Image
-                            src={frontmatter.coverImage}
-                            alt="cover"
-                            fill
-                            className="object-cover"
-                            sizes="(max-width: 1024px) 100vw, 768px"
-                            priority
-                        />
-                    </div>
-                )}
+                {/*{frontmatter.coverImage && (*/}
+                {/*    <div className="relative w-full h-64 md:h-80 mt-6 rounded-xl overflow-hidden">*/}
+                {/*        <Image*/}
+                {/*            src={frontmatter.coverImage}*/}
+                {/*            alt="cover"*/}
+                {/*            fill*/}
+                {/*            className="object-cover"*/}
+                {/*            sizes="(max-width: 1024px) 100vw, 768px"*/}
+                {/*            priority*/}
+                {/*        />*/}
+                {/*    </div>*/}
+                {/*)}*/}
             </header>
 
             <article className="prose prose-gray max-w-none prose-img:rounded-xl prose-img:shadow-sm">
