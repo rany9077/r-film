@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { getAllMdxPosts, getMdxPostBySlug } from "@/lib/mdxPosts";
-import Image from "next/image";
+// import Image from "next/image";
 
 type PageProps = {
     params: Promise<{
