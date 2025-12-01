@@ -602,8 +602,8 @@ export default function Main() {
                                                     })
                                                 }
                                             >
-                                                <option value="door">도어/마감</option>
-                                                <option value="kitchen">주방</option>
+                                                <option value="door">문/문틀</option>
+                                                <option value="kitchen">싱크대</option>
                                                 <option value="furniture">가구</option>
                                                 <option value="wall">벽면</option>
                                                 <option value="etc">기타</option>
