@@ -1,7 +1,8 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { getAllMdxPosts, getMdxPostBySlug } from "@/lib/mdxPosts";
-// import Image from "next/image";
+import Link from "next/link";
+import { ChevronLeft, ChevronRight } from "lucide-react";
 
 type PageProps = {
     params: Promise<{
@@ -22,7 +23,7 @@ export async function generateStaticParams() {
 export async function generateMetadata(
     { params }: PageProps
 ): Promise<Metadata> {
-    const { slug } = await params; // ← 요 부분이 핵심!
+    const { slug } = await params;
 
     const post = await getMdxPostBySlug(slug);
 
@@ -47,8 +48,6 @@ export async function generateMetadata(
     const date = frontmatter.date ?? undefined;
     const coverImage = frontmatter.coverImage ?? undefined;
 
-    // RootLayout에서 metadataBase가 이미 설정되어 있으므로
-    // canonical은 상대 경로로만 적어줘도 됨 (자동으로 ran-film.com과 합쳐짐)
     const canonicalPath = `/log/${slug}`;
 
     return {
@@ -83,9 +82,37 @@ export default async function LogDetailPage({ params }: PageProps) {
 
     const { frontmatter, content } = post;
 
+    // 전체 MDX 포스트 불러와서 이전글/다음글 계산
+    const allPosts = await getAllMdxPosts();
+
+    // createdAt 기준으로 최신순 정렬
+    const sorted = [...allPosts].sort((a, b) => {
+        const aTime = new Date(a.createdAt).getTime();
+        const bTime = new Date(b.createdAt).getTime();
+        return bTime - aTime; // 최신 → 과거
+    });
+
+    // 현재 글의 위치 찾기 (id 기준)
+    const currentIndex = sorted.findIndex((p) => p.id === slug);
+
+    const prevPost =
+        currentIndex > 0 ? sorted[currentIndex - 1] : null; // 리스트 상에서 "이전(위쪽)"
+    const nextPost =
+        currentIndex >= 0 && currentIndex < sorted.length - 1
+            ? sorted[currentIndex + 1]
+            : null; // 리스트 상에서 "다음(아래쪽)"
+
     return (
-        <main className="max-w-5xl mx-auto px-6 py-20">
+        <main className="max-w-5xl mx-auto px-6 pt-7 pb-20">
             <header className="mb-8">
+                <Link
+                    href="/log"
+                    className="inline-block text-sm text-gray-700 hover:text-gray-700
+                   transition-colors duration-200 mb-5"
+                >
+                    ← 목록으로
+                </Link>
+
                 <p className="text-xs text-gray-400">
                     작업 일지 ·{" "}
                     {frontmatter.date
@@ -101,23 +128,62 @@ export default async function LogDetailPage({ params }: PageProps) {
                     </p>
                 )}
 
-                {/*{frontmatter.coverImage && (*/}
-                {/*    <div className="relative w-full h-64 md:h-80 mt-6 rounded-xl overflow-hidden">*/}
-                {/*        <Image*/}
-                {/*            src={frontmatter.coverImage}*/}
-                {/*            alt="cover"*/}
-                {/*            fill*/}
-                {/*            className="object-cover"*/}
-                {/*            sizes="(max-width: 1024px) 100vw, 768px"*/}
-                {/*            priority*/}
-                {/*        />*/}
-                {/*    </div>*/}
-                {/*)}*/}
+                {/* 커버 이미지 다시 쓰고 싶으면 이 부분만 주석 해제 */}
+                {/* {frontmatter.coverImage && (
+                    <div className="relative w-full h-64 md:h-80 mt-6 rounded-xl overflow-hidden">
+                        <Image
+                            src={frontmatter.coverImage}
+                            alt="cover"
+                            fill
+                            className="object-cover"
+                            sizes="(max-width: 1024px) 100vw, 768px"
+                            priority
+                        />
+                    </div>
+                )} */}
             </header>
 
             <article className="prose prose-gray max-w-none prose-img:rounded-xl prose-img:shadow-sm">
                 {content}
             </article>
+
+            <nav className="mt-12 pt-6 flex items-center justify-between text-sm text-gray-500">
+
+                {/* 이전글 */}
+                {prevPost ? (
+                    <Link
+                        href={`/log/${prevPost.id}`}
+                        className="
+                        inline-flex items-center gap-1
+                        transition-all duration-250 delay-100
+                        hover:translate-x-[-3px] hover:font-semibold
+                    "
+                    >
+                        <ChevronLeft size={18} className="text-gray-5500"/>
+                        <span className="font-medium">{prevPost.title}</span>
+                    </Link>
+                ) : (
+                    <span/>
+                )}
+
+                {/* 다음글 */}
+                {nextPost ? (
+                    <Link
+                        href={`/log/${nextPost.id}`}
+                        className="
+                        inline-flex items-center gap-1 text-right
+                        transition-all duration-250 delay-100
+                        hover:translate-x-[3px] hover:font-semibold
+                    "
+                    >
+                        <span className="font-medium">{nextPost.title}</span>
+                        <ChevronRight size={18} className="text-gray-500"/>
+                    </Link>
+                ) : (
+                    <span/>
+                )}
+
+            </nav>
         </main>
     );
 }
