@@ -22,7 +22,7 @@ export default function PostCard({
         <article className="rounded-2xl border border-gray-200 p-5 bg-white shadow-sm overflow-hidden">
             {/* 헤더 */}
             <header className="flex items-center justify-between">
-                <h2 className="text-lg font-semibold text-gray-900 flex items-center gap-2">
+                <h2 className="text-base! font-medium text-gray-900 flex items-center gap-2">
                     {post.title}
                 </h2>
 

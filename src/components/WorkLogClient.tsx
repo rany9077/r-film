@@ -147,9 +147,9 @@ export default function WorkLogClient({ initialMdxPosts }: Props) {
 
                 {/* 1) Supabase 글 캐러셀 */}
                 {supabaseFiltered.length > 0 && (
-                    <section aria-label="현장 일지 슬라이드">
-                        <h2 className="text-[18px] md:text-2xl font-semibold mx-2 mb-3 flex items-center gap-1">
-                            <SquarePen size={22} strokeWidth={2} className="text-[#111]" />
+                    <section aria-label="현장 일지 슬라이드" className="mb-8">
+                        <h2 className="text-[18px] font-medium mx-2 mb-3 flex items-center gap-1">
+                            <SquarePen size={20} strokeWidth={2} className="text-[#111]" />
                             현장 일지
                         </h2>
                         <PostCarousel
@@ -167,8 +167,8 @@ export default function WorkLogClient({ initialMdxPosts }: Props) {
 
                 {/* 2) MDX 글 리스트 */}
                 <section aria-label="수업 작업 일지">
-                    <h2 className="text-[18px] md:text-2xl font-bold mx-2 mb-3  flex items-center gap-1" >
-                        <SquarePen size={22} strokeWidth={2} className="text-[#111]" />
+                    <h2 className="text-[18px] font-medium mx-2 mb-3 flex items-center gap-1" >
+                        <SquarePen size={20} strokeWidth={2} className="text-[#111]" />
                         수업 일지
                     </h2>
 
@@ -187,7 +187,7 @@ export default function WorkLogClient({ initialMdxPosts }: Props) {
                                     className="rounded-xl border border-gray-200 p-5 bg-white shadow-sm overflow-hidden"
                                 >
                                     <div>
-                                        <h3 className="text-lg! font-semibold text-gray-900 pb-2">
+                                        <h3 className="text-base! font-medium text-gray-900 pb-2">
                                             {post.title}
                                         </h3>
                                         <div className="text-xs text-gray-400">
