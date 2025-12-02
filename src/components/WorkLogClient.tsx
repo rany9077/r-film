@@ -151,7 +151,7 @@ export default function WorkLogClient({ initialMdxPosts }: Props) {
                 {/* 1) Supabase 글 캐러셀 */}
                 {supabaseFiltered.length > 0 && (
                     <FadeInSection>
-                        <section aria-label="현장 일지 슬라이드">
+                        <section aria-label="현장 일지 슬라이드" className="mb-15 md:mb-20">
                             <h2 className="text-[18px] font-medium mx-2 mb-3 flex items-center gap-1">
                                 <SquarePen size={20} strokeWidth={2} className="text-[#111]"/>
                                 현장 일지
@@ -180,7 +180,7 @@ export default function WorkLogClient({ initialMdxPosts }: Props) {
 
                 {/* 2) MDX 글 리스트 */}
                 {isCarouselReady && (
-                <section aria-label="수업 작업 일지" className="mb-9 md:mb-15">
+                <section aria-label="수업 작업 일지">
                     <h2 className="text-[18px] font-medium mx-2 mb-3 flex items-center gap-1">
                         <SquarePen size={20} strokeWidth={2} className="text-[#111]"/>
                         수업 일지
@@ -202,7 +202,7 @@ export default function WorkLogClient({ initialMdxPosts }: Props) {
                                     className="rounded-xl border border-gray-200 p-5 bg-white shadow-sm overflow-hidden"
                                 >
                                     <FadeInSection>
-                                    <div>
+                                    <div className="px-0!">
                                         <h3 className="text-base! font-medium text-gray-900 pb-2">
                                             {post.title}
                                         </h3>
