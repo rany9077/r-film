@@ -15,6 +15,7 @@ import ContactButton from "@/components/ContactButton";
 import Header from "@/components/Header";
 import PostCarousel from "@/components/PostCarousel";
 import { SquarePen } from "lucide-react";
+import FadeInSection from "./FadeInSection";
 
 const AUTHOR_UID = process.env.NEXT_PUBLIC_ADMIN_UID;
 
@@ -32,6 +33,7 @@ export default function WorkLogClient({ initialMdxPosts }: Props) {
     const [query, setQuery] = useState("");
     const [editing, setEditing] = useState<Post | null>(null);
     const [oSquarePen, setOSquarePen] = useState(false);
+    const [isCarouselReady, setIsCarouselReady] = useState(false);
 
     const { user } = useAuth();
     const isAuthor = !!user && !!AUTHOR_UID && user.id === AUTHOR_UID;
@@ -41,9 +43,10 @@ export default function WorkLogClient({ initialMdxPosts }: Props) {
     // 실시간 구독
     useEffect(() => {
         if (!AUTHOR_UID) return;
-        const unsub = listenMyPosts(AUTHOR_UID, (items) =>
-            setSupabasePosts(items as Post[])
-        );
+        const unsub = listenMyPosts(AUTHOR_UID, (items) => {
+            setSupabasePosts(items as Post[]);
+            setIsCarouselReady(true);   // 첫 응답 들어온 시점
+        });
         return () => unsub && unsub();
     }, []);
 
@@ -147,33 +150,44 @@ export default function WorkLogClient({ initialMdxPosts }: Props) {
 
                 {/* 1) Supabase 글 캐러셀 */}
                 {supabaseFiltered.length > 0 && (
-                    <section aria-label="현장 일지 슬라이드" className="mb-8">
-                        <h2 className="text-[18px] font-medium mx-2 mb-3 flex items-center gap-1">
-                            <SquarePen size={20} strokeWidth={2} className="text-[#111]" />
-                            현장 일지
-                        </h2>
-                        <PostCarousel
-                            posts={supabaseFiltered}
-                            isAuthor={isAuthor}
-                            onEditAction={(p) => {
-                                if (!isAuthor) return;
-                                setEditing(p);
-                                setOSquarePen(true);
-                            }}
-                            onDeleteAction={handleDeletePost}
-                        />
-                    </section>
+                    <FadeInSection>
+                        <section aria-label="현장 일지 슬라이드">
+                            <h2 className="text-[18px] font-medium mx-2 mb-3 flex items-center gap-1">
+                                <SquarePen size={20} strokeWidth={2} className="text-[#111]"/>
+                                현장 일지
+                            </h2>
+
+                            {!isCarouselReady  ? (
+                                // 캐러셀 로딩 자리 확보
+                                <div className="h-[260px] w-full rounded-2xl border bg-white/60 animate-pulse"/>
+                            ) : supabaseFiltered.length > 0 ? (
+                                <FadeInSection>
+                                    <PostCarousel
+                                        posts={supabaseFiltered}
+                                        isAuthor={isAuthor}
+                                        onEditAction={(p) => {
+                                            if (!isAuthor) return;
+                                            setEditing(p);
+                                            setOSquarePen(true);
+                                        }}
+                                        onDeleteAction={handleDeletePost}
+                                    />
+                                </FadeInSection>
+                            ) : null}
+                        </section>
+                    </FadeInSection>
                 )}
 
                 {/* 2) MDX 글 리스트 */}
-                <section aria-label="수업 작업 일지">
-                    <h2 className="text-[18px] font-medium mx-2 mb-3 flex items-center gap-1" >
-                        <SquarePen size={20} strokeWidth={2} className="text-[#111]" />
+                {isCarouselReady && (
+                <section aria-label="수업 작업 일지" className="mb-9 md:mb-15">
+                    <h2 className="text-[18px] font-medium mx-2 mb-3 flex items-center gap-1">
+                        <SquarePen size={20} strokeWidth={2} className="text-[#111]"/>
                         수업 일지
                     </h2>
 
-                {mdxFiltered.length === 0 && supabaseFiltered.length === 0 ? (
-                        <NoResults />
+                    {mdxFiltered.length === 0 && supabaseFiltered.length === 0 ? (
+                        <NoResults/>
                     ) : mdxFiltered.length === 0 ? (
                         <div className="rounded-xl border bg-white shadow-sm p-6 text-sm text-gray-500">
                             작업 일지가 없습니다.
@@ -181,11 +195,13 @@ export default function WorkLogClient({ initialMdxPosts }: Props) {
                     ) : (
                         <div className="grid gap-4 p-0!">
                             {mdxFiltered.map((post) => (
+
                                 <Link
                                     key={post.id}
                                     href={`/log/${post.id}`}
                                     className="rounded-xl border border-gray-200 p-5 bg-white shadow-sm overflow-hidden"
                                 >
+                                    <FadeInSection>
                                     <div>
                                         <h3 className="text-base! font-medium text-gray-900 pb-2">
                                             {post.title}
@@ -220,11 +236,13 @@ export default function WorkLogClient({ initialMdxPosts }: Props) {
                                             </div>
                                         )}
                                     </div>
+                                    </FadeInSection>
                                 </Link>
                             ))}
                         </div>
                     )}
                 </section>
+                )}
             </main>
 
             <WriteButton onClick={() => setOSquarePen(true)} />

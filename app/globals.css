@@ -65,24 +65,25 @@ section > div {
     font-weight: 600;
 }
 .swiper-button-prev.custom-swiper-nav {
-    margin-left: 8px!important;
+    margin-left: 32px!important;
 }
 .swiper-button-next.custom-swiper-nav {
-   margin-right: 8px;
+   margin-right: 32px!important;
 }
-
+.group:hover img {
+    transform: scale(1.03);
+}
 /* --- 도트 스타일 --- */
 .custom-swiper-pagination .swiper-pagination-bullet {
     background: #666 !important;      /* 기본 도트 색 */
     opacity: 0.3;
-    width: 6px;
-    height: 6px;
+    width: 5px !important;
+    height: 5px !important;
 }
 
-.custom-swiper-pagination .swiper-pagination-bullet-active {
+.swiper-pagination-bullet-active {
     background: #333 !important;      /* 활성 도트 색 */
     opacity: 1;
-    transform: scale(1.2);             /* 활성 도트 살짝 강조 */
 }
 
 @media (max-width: 1024px) {
@@ -99,6 +100,12 @@ section > div {
         top: 60% !important;
         width: 18px !important;
         height: 18px !important;
+    }
+    .swiper-button-prev.custom-swiper-nav {
+        margin-left: 12px!important;
+    }
+    .swiper-button-next.custom-swiper-nav {
+        margin-right: 12px!important;
     }
 }
 
