@@ -2,7 +2,6 @@ import type { Post } from "@/types/post";
 import Zoom from "react-medium-image-zoom";
 import Image from "next/image";
 import React from "react";
-import {ZoomIn} from "lucide-react";
 
 export default function PostCard({
                                      post,
