@@ -4,6 +4,9 @@ import { getAllMdxPosts, getMdxPostBySlug } from "@/lib/mdxPosts";
 import Link from "next/link";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 
+// 완전 정적
+export const dynamic = "force-static";
+
 type PageProps = {
     params: Promise<{
         slug: string;
