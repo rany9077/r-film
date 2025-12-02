@@ -50,6 +50,36 @@ section > div {
     @apply leading-normal! mb-1 text-gray-900;
 }
 
+/* --- 화살표 네비게이션 스타일 --- */
+.custom-swiper-nav {
+    color: #333 !important; /* 화살표 색상 */
+    width: 28px !important;  /* 크기 줄이기 */
+    height: 28px !important;
+}
+
+.custom-swiper-nav::after {
+    font-size: 22px !important; /* 아이콘 크기 줄임 */
+    font-weight: 600;
+}
+.swiper-button-prev.custom-swiper-nav {
+    margin-left: 8px!important;
+}
+.swiper-button-next.custom-swiper-nav {
+   margin-right: 8px;
+}
+
+/* --- 도트 스타일 --- */
+.custom-swiper-pagination .swiper-pagination-bullet {
+    background: #666 !important;      /* 기본 도트 색 */
+    opacity: 0.3;
+}
+
+.custom-swiper-pagination .swiper-pagination-bullet-active {
+    background: #333 !important;      /* 활성 도트 색 */
+    opacity: 1;
+    transform: scale(1.2);             /* 활성 도트 살짝 강조 */
+}
+
 @media (max-width: 1024px) {
     :root {
         --base-font-size: 15px; /* Tablet 폰트 사이즈 */
@@ -60,5 +90,11 @@ section > div {
     :root {
         --base-font-size: 14px; /* Mobile 폰트 사이즈 */
     }
+    .custom-swiper-nav {
+
+        width: 22px !important;
+        height: 22px !important;
+    }
 }
+
 
