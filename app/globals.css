@@ -55,6 +55,8 @@ section > div {
     color: #333 !important; /* 화살표 색상 */
     width: 28px !important;  /* 크기 줄이기 */
     height: 28px !important;
+    top: 60% !important;
+    transform: translateY(-50%);
 }
 
 .custom-swiper-nav::after {
@@ -72,6 +74,8 @@ section > div {
 .custom-swiper-pagination .swiper-pagination-bullet {
     background: #666 !important;      /* 기본 도트 색 */
     opacity: 0.3;
+    width: 6px;
+    height: 6px;
 }
 
 .custom-swiper-pagination .swiper-pagination-bullet-active {
