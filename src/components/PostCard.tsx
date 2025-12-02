@@ -2,7 +2,6 @@ import type { Post } from "@/types/post";
 import Zoom from "react-medium-image-zoom";
 import Image from "next/image";
 import React from "react";
-import {ZoomIn} from "lucide-react";
 
 export default function PostCard({
                                      post,
@@ -61,9 +60,6 @@ export default function PostCard({
                                 height={900}
                                 className="object-cover rounded-xl cursor-zoom-in"
                             />
-                            <div className="absolute top-3 right-4 bg-black/5 p-1.5 rounded-md">
-                                <ZoomIn size={20} strokeWidth={2} className="text-[#333]"/>
-                            </div>
                         </div>
                     </Zoom>
 
