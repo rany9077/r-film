@@ -51,38 +51,37 @@ section > div {
     @apply leading-normal! mb-1 text-gray-900;
 }
 
-/* --- 화살표 네비게이션 스타일 --- */
+/* 스와이퍼 네비게이션 */
 .custom-swiper-nav {
-    color: #333 !important; /* 화살표 색상 */
-    width: 28px !important;  /* 크기 줄이기 */
+    color: #333 !important;
+    width: 28px !important;
     height: 28px !important;
     top: 50% !important;
     transform: translateY(-50%);
 }
 
 .custom-swiper-nav::after {
-    font-size: 22px !important; /* 아이콘 크기 줄임 */
+    font-size: 22px !important;
     font-weight: 600;
 }
+
 .swiper-button-prev.custom-swiper-nav {
     margin-left: 32px!important;
 }
+
 .swiper-button-next.custom-swiper-nav {
    margin-right: 32px!important;
 }
-.group:hover img {
-    transform: scale(1.03);
-}
-/* --- 도트 스타일 --- */
+
 .custom-swiper-pagination .swiper-pagination-bullet {
-    background: #666 !important;      /* 기본 도트 색 */
+    background: #666 !important;
     opacity: 0.3;
     width: 5px !important;
     height: 5px !important;
 }
 
 .swiper-pagination-bullet-active {
-    background: #333 !important;      /* 활성 도트 색 */
+    background: #333 !important;
     opacity: 1;
 }
 
@@ -96,14 +95,17 @@ section > div {
     :root {
         --base-font-size: 14px; /* Mobile 폰트 사이즈 */
     }
+
     .custom-swiper-nav {
         top: 60% !important;
         width: 18px !important;
         height: 18px !important;
     }
+
     .swiper-button-prev.custom-swiper-nav {
         margin-left: 12px!important;
     }
+
     .swiper-button-next.custom-swiper-nav {
         margin-right: 12px!important;
     }
