@@ -1,5 +1,8 @@
 import type { Post } from "@/types/post";
-import ImagePreview from "@/components/ImagePreview";
+import Zoom from "react-medium-image-zoom";
+import Image from "next/image";
+import React from "react";
+import {ZoomIn} from "lucide-react";
 
 export default function PostCard({
                                      post,
@@ -12,12 +15,17 @@ export default function PostCard({
     onDeleteAction: (id: string) => void;
     isAuthor: boolean;
 }) {
+    const hasImages = Array.isArray(post.imageUrls) && post.imageUrls.length > 0;
+    const mainImage = hasImages ? post.imageUrls![0] : null;
+
     return (
         <article className="rounded-2xl border border-gray-200 p-5 bg-white shadow-sm overflow-hidden">
+            {/* 헤더 */}
             <header className="flex items-center justify-between">
-                <h2 className="text-lg font-semibold text-gray-900">{post.title}</h2>
+                <h2 className="text-lg font-semibold text-gray-900 flex items-center gap-2">
+                    {post.title}
+                </h2>
 
-                {/* 작성자일 때만 수정/삭제 버튼 출력 */}
                 {isAuthor && (
                     <div className="flex gap-2">
                         <button
@@ -36,14 +44,34 @@ export default function PostCard({
                 )}
             </header>
 
-            <p className="text-xs text-gray-400 mt-1 text-left">{new Date(post.createdAt).toLocaleDateString("ko-KR")}</p>
+            {/* 날짜 */}
+            <p className="text-xs text-gray-400 mt-1">
+                {new Date(post.createdAt).toLocaleDateString("ko-KR")}
+            </p>
 
-            {post.imageUrls && post.imageUrls.length > 0 && (
+            {/* 이미지 + Zoom */}
+            {hasImages && mainImage && (
                 <div className="mt-4">
-                    <ImagePreview images={post.imageUrls} alt={post.title} />
+                    <Zoom>
+                        <div className="relative">
+                            <Image
+                                src={mainImage}
+                                alt={post.title}
+                                width={1200}
+                                height={900}
+                                className="object-cover rounded-xl cursor-zoom-in"
+                            />
+                            <div className="absolute top-3 right-4 bg-black/5 p-1.5 rounded-md">
+                                <ZoomIn size={20} strokeWidth={2} className="text-[#333]"/>
+                            </div>
+                        </div>
+                    </Zoom>
+
+
                 </div>
             )}
 
+            {/* 내용 */}
             <p className="mt-4 whitespace-pre-wrap leading-7 text-gray-800 text-sm">
                 {post.content}
             </p>

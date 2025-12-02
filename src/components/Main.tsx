@@ -47,7 +47,7 @@ export default function Main() {
                 .filter((url): url is string => !!url && url.trim().length > 0) ?? [];
 
         const unique = Array.from(new Set(urls)); // 중복 제거
-        return unique.slice(0, 6); // 최대 6개만 노출
+        return unique.slice(0, 4); // 최대 4개만 노출
     }, [posts]);
 
     const [form, setForm] = useState({
@@ -331,13 +331,13 @@ export default function Main() {
                                 작업 일지가 쌓이면 실제 시공 사진들이 자동으로 노출됩니다.
                             </div>
                         ) : (
-                            <div className="grid gap-3 sm:gap-4 md:grid-cols-3">
+                            <div className="grid gap-3 sm:gap-4 grid-cols-2">
                                 {galleryImages.map((src, idx) => (
                                     <figure
                                         key={src + idx}
                                         className="relative overflow-hidden rounded-xl bg-gray-100 shadow-sm"
                                     >
-                                        <div className="relative h-40 sm:h-60 md:h-56">
+                                        <div className="relative h-40 sm:h-60 md:h-80">
                                             <Image
                                                 src={src}
                                                 alt={`시공 사례 이미지 ${idx + 1}`}

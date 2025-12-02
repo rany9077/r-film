@@ -6,7 +6,6 @@ import { Navigation, Pagination } from "swiper/modules";
 import "swiper/css";
 import "swiper/css/navigation";
 import "swiper/css/pagination";
-import "swiper/css/zoom";
 
 import PostCard from "@/components/PostCard";
 import type { Post } from "@/types/post";
@@ -36,7 +35,6 @@ export default function PostCarousel({
     return (
         <Swiper
             modules={[Navigation, Pagination]}
-            zoom={true}
             loop
             centeredSlides
             spaceBetween={16}
@@ -64,16 +62,14 @@ export default function PostCarousel({
             {posts.map((post) => (
                 <SwiperSlide key={post.id}>
                     {/* 여기서는 Post 한 개씩만 넘김 */}
-                    <div className="swiper-zoom-container">
-                        <PostCard
-                            post={post}
-                            isAuthor={isAuthor}
-                            onEditAction={onEditAction}
-                            onDeleteAction={onDeleteAction}
-                        />
-                    </div>
+                    <PostCard
+                        post={post}
+                        isAuthor={isAuthor}
+                        onEditAction={onEditAction}
+                        onDeleteAction={onDeleteAction}
+                    />
                 </SwiperSlide>
-                ))}
+            ))}
 
             {/* 커스텀 네비게이션 버튼 */}
             <div className="swiper-button-prev custom-swiper-nav" />

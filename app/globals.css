@@ -1,4 +1,5 @@
 @import "tailwindcss";
+@import "react-medium-image-zoom/dist/styles.css";
 
 :root { color-scheme: light; }
 html, body, #__next { height: 100%; font-family: 'Pretendard Variable', 'Pretendard', sans-serif; }
