@@ -9,6 +9,7 @@ export type Post = {
     createdAt: string;
     coverImage?: string;
     source: PostSource;
+    post: Post;
 };
 
 export type MdxPost = {

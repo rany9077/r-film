@@ -2,18 +2,19 @@
 
 import React, { useEffect, useMemo, useState } from "react";
 import Image from "next/image";
-import PostCard from "@/components/PostCard";
-import NoResults from "@/components/NoResults";
+import Link from "next/link";
 import { Post } from "@/types/post";
 import type { Post as SupabasePost } from "@/types/post";
+import { MdxPost } from "@/types/post";
 import { useAuth } from "@/contexts/AuthContext";
 import { listenMyPosts, deletePost, updatePost, createPost } from "@/lib/posts";
+import NoResults from "@/components/NoResults";
 import WriteButton from "@/components/WriteButton";
 import WritePopup from "@/components/WritePopup";
 import ContactButton from "@/components/ContactButton";
-import { MdxPost } from "@/types/post";
-import Link from "next/link";
 import Header from "@/components/Header";
+import PostCarousel from "@/components/PostCarousel";
+import { SquarePen } from "lucide-react";
 
 const AUTHOR_UID = process.env.NEXT_PUBLIC_ADMIN_UID;
 
@@ -30,7 +31,7 @@ export default function WorkLogClient({ initialMdxPosts }: Props) {
     const [mdxPosts] = useState<MdxPost[]>(initialMdxPosts);
     const [query, setQuery] = useState("");
     const [editing, setEditing] = useState<Post | null>(null);
-    const [open, setOpen] = useState(false);
+    const [oSquarePen, setOSquarePen] = useState(false);
 
     const { user } = useAuth();
     const isAuthor = !!user && !!AUTHOR_UID && user.id === AUTHOR_UID;
@@ -81,8 +82,8 @@ export default function WorkLogClient({ initialMdxPosts }: Props) {
         await deletePost(AUTHOR_UID, id);
     };
 
-    // supabase + MDX 합치고 검색/정렬
-    const merged: UnifiedPost[] = useMemo(() => {
+    // supabase + MDX 합치고 검색/정렬 + 타입별 분리
+    const { supabaseFiltered, mdxFiltered } = useMemo(() => {
         const all: UnifiedPost[] = [...mdxPosts, ...supabasePosts];
 
         const q = query.trim().toLowerCase();
@@ -91,7 +92,7 @@ export default function WorkLogClient({ initialMdxPosts }: Props) {
             ? all.filter((p) => {
                 const title = ("title" in p && p.title) || "";
                 const content =
-                    "content" in p && true
+                    "content" in p
                         ? p.content
                         : "summary" in p
                             ? p.summary || ""
@@ -114,10 +115,16 @@ export default function WorkLogClient({ initialMdxPosts }: Props) {
                 )
         );
 
-        // 최신순 정렬 (내림차순)
-        filtered.reverse();
+        filtered.reverse(); // 최신순
 
-        return filtered;
+        const supabaseFiltered = filtered.filter(
+            (p): p is SupabasePost => "content" in p
+        );
+        const mdxFiltered = filtered.filter(
+            (p): p is MdxPost => !("content" in p)
+        );
+
+        return { supabaseFiltered, mdxFiltered };
     }, [supabasePosts, mdxPosts, query]);
 
     if (!mounted) {
@@ -136,51 +143,57 @@ export default function WorkLogClient({ initialMdxPosts }: Props) {
                 query={query}
                 onQueryChangeAction={setQuery}
             />
-            <main className="max-w-5xl mx-auto px-4 py-8 space-y-4">
-                <header className="mb-4">
-                    <h2 className="text-2xl md:text-3xl font-bold mb-1">작업 일지</h2>
-                    <p className="text-sm text-gray-600">
-                        인테리어 필름 실습 기록부터 실제 현장 작업까지, 순차적으로
-                        정리하고 있습니다.
-                    </p>
-                </header>
+            <main className="max-w-5xl mx-auto px-4 py-8 space-y-6">
 
-                {merged.length === 0 ? (
-                    <NoResults />
-                ) : (
-                    <div className="grid gap-4">
-                        {merged.map((post) =>
-                            "content" in post ? (
-                                // Supabase 글
-                                <PostCard
-                                    key={post.id}
-                                    post={post}
-                                    isAuthor={isAuthor}
-                                    onEditAction={(p) => {
-                                        if (!isAuthor) return;
-                                        setEditing(p);
-                                        setOpen(true);
-                                    }}
-                                    onDeleteAction={async (id) => {
-                                        if (!isAuthor || !AUTHOR_UID) return;
-                                        if (!confirm("정말 삭제하시겠습니까?")) return;
-                                        await deletePost(AUTHOR_UID, id);
-                                        await handleDeletePost(id);
-                                    }}
-                                />
-                            ) : (
-                                // MDX 글
+                {/* 1) Supabase 글 캐러셀 */}
+                {supabaseFiltered.length > 0 && (
+                    <section aria-label="현장 일지 슬라이드">
+                        <h2 className="text-[18px] md:text-2xl font-semibold mx-2 mb-3 flex items-center gap-1">
+                            <SquarePen size={22} strokeWidth={2} className="text-[#111]" />
+                            현장 일지
+                        </h2>
+                        <PostCarousel
+                            posts={supabaseFiltered}
+                            isAuthor={isAuthor}
+                            onEditAction={(p) => {
+                                if (!isAuthor) return;
+                                setEditing(p);
+                                setOSquarePen(true);
+                            }}
+                            onDeleteAction={handleDeletePost}
+                        />
+                    </section>
+                )}
+
+                {/* 2) MDX 글 리스트 */}
+                <section aria-label="수업 작업 일지">
+                    <h2 className="text-[18px] md:text-2xl font-bold mx-2 mb-3  flex items-center gap-1" >
+                        <SquarePen size={22} strokeWidth={2} className="text-[#111]" />
+                        수업 일지
+                    </h2>
+
+                {mdxFiltered.length === 0 && supabaseFiltered.length === 0 ? (
+                        <NoResults />
+                    ) : mdxFiltered.length === 0 ? (
+                        <div className="rounded-xl border bg-white shadow-sm p-6 text-sm text-gray-500">
+                            작업 일지가 없습니다.
+                        </div>
+                    ) : (
+                        <div className="grid gap-4 p-0!">
+                            {mdxFiltered.map((post) => (
                                 <Link
                                     key={post.id}
                                     href={`/log/${post.id}`}
-                                    className="rounded-2xl border border-gray-200 p-5 bg-white shadow-sm overflow-hidden"
+                                    className="rounded-xl border border-gray-200 p-5 bg-white shadow-sm overflow-hidden"
                                 >
                                     <div>
-                                        <h2 className="text-lg font-semibold text-gray-900 pb-2">
+                                        <h3 className="text-lg! font-semibold text-gray-900 pb-2">
                                             {post.title}
-                                        </h2>
+                                        </h3>
                                         <div className="text-xs text-gray-400">
-                                        {new Date(post.createdAt).toLocaleDateString("ko-KR")}
+                                            {new Date(post.createdAt).toLocaleDateString(
+                                                "ko-KR"
+                                            )}
                                         </div>
                                         {post.summary && (
                                             <p className="mt-2 text-sm text-gray-600 line-clamp-2">
@@ -188,7 +201,6 @@ export default function WorkLogClient({ initialMdxPosts }: Props) {
                                             </p>
                                         )}
 
-                                        {/* 썸네일 영역 */}
                                         {post.coverImage && (
                                             <div className="relative w-full h-50 sm:h-58 md:h-62 mt-4">
                                                 <Image
@@ -196,29 +208,29 @@ export default function WorkLogClient({ initialMdxPosts }: Props) {
                                                     alt={post.title}
                                                     fill
                                                     sizes="(max-width: 640px) 100vw,
-                                                   (max-width: 1024px) 50vw,
-                                                   33vw"
+                                                       (max-width: 1024px) 50vw,
+                                                       33vw"
                                                     className="object-cover rounded-lg"
                                                 />
-                                                <div
-                                                    className="absolute inset-0 flex items-center justify-center bg-black/30 rounded-lg">
-                                                    <span className="text-white/70 text-sm">자세히 보기</span>
+                                                <div className="absolute inset-0 flex items-center justify-center bg-black/30 rounded-lg">
+                                                <span className="text-white/70 text-sm">
+                                                    자세히 보기
+                                                </span>
                                                 </div>
                                             </div>
-
                                         )}
                                     </div>
                                 </Link>
-                            )
-                        )}
-                    </div>
-                )}
+                            ))}
+                        </div>
+                    )}
+                </section>
             </main>
 
-            <WriteButton onClick={() => setOpen(true)} />
+            <WriteButton onClick={() => setOSquarePen(true)} />
             <ContactButton />
 
-            {open && (
+            {oSquarePen && (
                 <WritePopup
                     initial={editing ?? undefined}
                     onSaveAction={async (data) => {
@@ -228,11 +240,11 @@ export default function WorkLogClient({ initialMdxPosts }: Props) {
                             await handleCreateAction(data);
                         }
                         setEditing(null);
-                        setOpen(false);
+                        setOSquarePen(false);
                     }}
                     onCloseAction={() => {
                         setEditing(null);
-                        setOpen(false);
+                        setOSquarePen(false);
                     }}
                 />
             )}
