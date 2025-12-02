@@ -1,11 +1,12 @@
 "use client";
 
 import { Swiper, SwiperSlide } from "swiper/react";
-import { Navigation, Pagination } from "swiper/modules";
+import {Autoplay, EffectFade, Navigation, Pagination} from "swiper/modules";
 
 import "swiper/css";
 import "swiper/css/navigation";
 import "swiper/css/pagination";
+import "swiper/css/effect-fade";
 
 import PostCard from "@/components/PostCard";
 import type { Post } from "@/types/post";
@@ -33,50 +34,58 @@ export default function PostCarousel({
     }
 
     return (
-        <Swiper
-            modules={[Navigation, Pagination]}
-            loop
-            centeredSlides
-            spaceBetween={16}
-            slidesPerView={1}
-            navigation={{
-                nextEl: ".swiper-button-next",
-                prevEl: ".swiper-button-prev",
-            }}
-            pagination={{
-                el: ".swiper-pagination",
-                clickable: true,
-            }}
-            breakpoints={{
-                768: {
-                    slidesPerView: 1,
-                    spaceBetween: 28,
-                },
-                1024: {
-                    slidesPerView: 1,
-                    spaceBetween: 32,
-                },
-            }}
-            className="w-full max-w-2xl mx-auto"
-        >
-            {posts.map((post) => (
-                <SwiperSlide key={post.id}>
-                    {/* 여기서는 Post 한 개씩만 넘김 */}
-                    <PostCard
-                        post={post}
-                        isAuthor={isAuthor}
-                        onEditAction={onEditAction}
-                        onDeleteAction={onDeleteAction}
-                    />
-                </SwiperSlide>
-            ))}
+        <div className="relative w-full max-w-2xl mx-auto px-0!">
+            {/* 네비 버튼을 Swiper 밖에 둠 */}
+            <div className="swiper-button-prev custom-swiper-nav"/>
+            <div className="swiper-button-next custom-swiper-nav"/>
 
-            {/* 커스텀 네비게이션 버튼 */}
-            <div className="swiper-button-prev custom-swiper-nav" />
-            <div className="swiper-button-next custom-swiper-nav" />
+            <Swiper
+                modules={[Navigation, Pagination, Autoplay, EffectFade,]}
+                loop
+                effect="fade"
+                fadeEffect={{ crossFade: true }}
+                autoplay={{
+                    delay: 2500,
+                    disableOnInteraction: false,
+                }}
+                navigation={{
+                    nextEl: ".swiper-button-next",
+                    prevEl: ".swiper-button-prev",
+                }}
+                pagination={{
+                    el: ".swiper-pagination",
+                    clickable: true,
+                }}
+                onSwiper={(swiper) => {
+                    // 네비/오토플레이 초기화 이슈 방지용 안전장치
+                    setTimeout(() => {
+                        if (swiper.navigation) {
+                            swiper.navigation.init();
+                            swiper.navigation.update();
+                        }
+                        if (swiper.autoplay) {
+                            swiper.autoplay.stop();
+                            swiper.autoplay.start();
+                        }
+                    }, 0);
+                }}
+                className="w-full overflow-hidden rounded-2xl bg-black/5"
+            >
+                {posts.map((post) => (
+                    <SwiperSlide key={post.id}>
+                        <PostCard
+                            post={post}
+                            isAuthor={isAuthor}
+                            onEditAction={onEditAction}
+                            onDeleteAction={onDeleteAction}
+                        />
+                    </SwiperSlide>
+                ))}
 
-            {/* 커스텀 도트 */}
-            <div className="swiper-pagination custom-swiper-pagination" />
-        </Swiper>
+                {/* pagination은 Swiper 안에 둬도 됨 */}
+                <div className="swiper-pagination"/>
+            </Swiper>
+        </div>
+
     );
 }
