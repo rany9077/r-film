@@ -218,22 +218,59 @@ export default function WorkLogClient({ initialMdxPosts }: Props) {
                                         )}
 
                                         {post.coverImage && (
-                                            <div className="relative w-full h-50 sm:h-58 md:h-62 mt-4">
+                                            <div
+                                                className="relative w-full h-50 sm:h-58 md:h-62 mt-4 group overflow-hidden rounded-lg">
                                                 <Image
                                                     src={post.coverImage}
                                                     alt={post.title}
                                                     fill
                                                     sizes="(max-width: 640px) 100vw,
-                                                       (max-width: 1024px) 50vw,
-                                                       33vw"
-                                                    className="object-cover rounded-lg"
+                                                           (max-width: 1024px) 50vw,
+                                                           33vw"
+                                                    className="
+                                                        object-cover
+                                                        rounded-lg
+                                                        transition-transform
+                                                        duration-500
+                                                        ease-[cubic-bezier(0.22,0.61,0.36,1)]
+                                                        md:group-hover:scale-[1.03]
+                                                    "
                                                 />
-                                                <div className="absolute inset-0 flex items-center justify-center bg-black/30 rounded-lg">
-                                                <span className="text-white/70 text-sm">
+
+                                                {/* 하단 subtle gradient */}
+                                                <div
+                                                    className="
+                                                    absolute
+                                                    inset-x-0
+                                                    bottom-0
+                                                    h-20
+                                                    bg-gradient-to-t
+                                                    from-black/50
+                                                    via-black/10
+                                                    to-transparent
+                                                    pointer-events-none
+                                                "
+                                                />
+
+                                                <div
+                                                    className="
+                                                    absolute
+                                                    bottom-3
+                                                    right-4
+                                                    text-[12px]
+                                                    text-white/80
+                                                    tracking-tight
+                                                    opacity-100
+                                                    md:opacity-0
+                                                    md:group-hover:opacity-100
+                                                    transition-opacity
+                                                    duration-400
+                                                "
+                                                >
                                                     자세히 보기
-                                                </span>
                                                 </div>
                                             </div>
+
                                         )}
                                     </div>
                                     </FadeInSection>
@@ -245,8 +282,8 @@ export default function WorkLogClient({ initialMdxPosts }: Props) {
                 )}
             </main>
 
-            <WriteButton onClick={() => setOSquarePen(true)} />
-            <ContactButton />
+            <WriteButton onClick={() => setOSquarePen(true)}/>
+            <ContactButton/>
 
             {oSquarePen && (
                 <WritePopup
