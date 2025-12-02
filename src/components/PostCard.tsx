@@ -36,7 +36,7 @@ export default function PostCard({
                 )}
             </header>
 
-            <p className="text-xs text-gray-400 mt-1">{new Date(post.createdAt).toLocaleDateString("ko-KR")}</p>
+            <p className="text-xs text-gray-400 mt-1 text-left">{new Date(post.createdAt).toLocaleDateString("ko-KR")}</p>
 
             {post.imageUrls && post.imageUrls.length > 0 && (
                 <div className="mt-4">
