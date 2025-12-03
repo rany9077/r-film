@@ -62,6 +62,12 @@ const pretendard = localFont({
 export default function RootLayout({ children }: { children: React.ReactNode }) {
     return (
         <html lang="ko" className={pretendard.variable}>
+        <head>
+            <meta
+                name="naver-site-verification"
+                content="b5e3693f38945df34a013b79434b12e8c7ef4519"
+            />
+        </head>
         <body suppressHydrationWarning>
         <AuthProvider>
             <RootLayoutShell>{children}</RootLayoutShell>
