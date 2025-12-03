@@ -5,6 +5,7 @@ import { usePathname } from "next/navigation";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import KakaoButton from "@/components/KakaoButton";
+import SNSButton from "@/components/SNSButton";
 
 type Props = {
     children: React.ReactNode;
@@ -21,7 +22,8 @@ export default function RootLayoutShell({ children }: Props) {
 
             <main>{children}</main>
 
-            {/* /log에서도 KakaoButton + Footer는 그대로 공통 */}
+            {/* /log에서도 SnsButton + KakaoButton + Footer는 그대로 공통 */}
+            <SNSButton />
             <KakaoButton />
             <Footer />
         </>

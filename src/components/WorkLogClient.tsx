@@ -16,6 +16,7 @@ import Header from "@/components/Header";
 import PostCarousel from "@/components/PostCarousel";
 import { SquarePen } from "lucide-react";
 import FadeInSection from "./FadeInSection";
+import SNSButton from "@/components/SNSButton";
 
 const AUTHOR_UID = process.env.NEXT_PUBLIC_ADMIN_UID;
 
@@ -283,6 +284,7 @@ export default function WorkLogClient({ initialMdxPosts }: Props) {
             </main>
 
             <WriteButton onClick={() => setOSquarePen(true)}/>
+            <SNSButton/>
             <ContactButton/>
 
             {oSquarePen && (

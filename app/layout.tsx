@@ -9,7 +9,7 @@ const SITE_URL = "https://ran-film.com";
 const SITE_NAME = "R.FILM";
 const SITE_TITLE = "란 필름 | R.FILM - 인테리어 필름 스튜디오";
 const SITE_DESCRIPTION =
-    "문짝·싱크대·가구·몰딩 등 집안 전체를 깔끔하게 리폼하는 인테리어 필름 스튜디오 R.FILM, 란 필름입니다. 과하지 않은 디자인과 견고한 마감으로 자연스러운 공간 변화를 제공합니다.";
+    "문짝·싱크대·가구·몰딩 등 집안 전체를 깔끔하게 리폼하는 인테리어 필름 스튜디오 란 필름 | R.FILM 입니다. 과하지 않은 디자인과 견고한 마감으로 자연스러운 공간 변화를 제공합니다.";
 
 export const metadata: Metadata = {
     metadataBase: new URL(SITE_URL),
@@ -29,7 +29,7 @@ export const metadata: Metadata = {
                 url: "/thum_v3.jpg",
                 width: 1200,
                 height: 630,
-                alt: "R.FILM 인테리어 필름 시공",
+                alt: "란 필름 | R.FILM 인테리어 필름 시공",
             },
         ],
     },
@@ -49,11 +49,13 @@ export const metadata: Metadata = {
     keywords: [
         "인테리어 필름",
         "인테리어필름 시공",
-        "란 필름",
         "문짝 리폼",
         "싱크대 필름",
+        "문 필름",
+        "선반 필름",
         "가구 리폼",
         "몰딩 필름",
+        "란 필름",
         "R.FILM",
         "서울 인테리어 필름",
         "필름 시공 가격",
