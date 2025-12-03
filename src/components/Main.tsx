@@ -192,7 +192,7 @@ export default function Main() {
                                     <div
                                         className="rounded-xl bg-white/90 border border-white/80 px-3 py-3 sm:px-4 sm:py-4 shadow-sm">
                                         <RollingNumber
-                                            value={10}
+                                            value={20}
                                             suffix="+"
                                             className="text-base sm:text-lg font-bold text-gray-900"
                                         />
@@ -205,16 +205,23 @@ export default function Main() {
                                             suffix="%"
                                             className="text-base sm:text-lg font-bold text-[#701eff]"
                                         />
-                                        <div className="mt-1 text-gray-500">고객 만족도</div>
+                                        {/*<div className="mt-1 text-gray-500">고객 만족도</div>*/}
+                                        <div className="mt-1 text-gray-500">완성도</div>
                                     </div>
                                     <div
                                         className="rounded-xl bg-white/90 border border-white/80 px-3 py-3 sm:px-4 sm:py-4 shadow-sm">
+                                        {/*<RollingNumber*/}
+                                        {/*    value={1}*/}
+                                        {/*    suffix="년"*/}
+                                        {/*    className="text-base sm:text-lg font-bold text-gray-900"*/}
+                                        {/*/>*/}
+                                        {/*<div className="mt-1 text-gray-500">시공 경력</div>*/}
                                         <RollingNumber
-                                            value={1}
-                                            suffix="년"
+                                            value={2}
+                                            suffix="개월"
                                             className="text-base sm:text-lg font-bold text-gray-900"
                                         />
-                                        <div className="mt-1 text-gray-500">시공 경력</div>
+                                        <div className="mt-1 text-gray-500">학원 수강</div>
                                     </div>
                                 </div>
                             </div>
