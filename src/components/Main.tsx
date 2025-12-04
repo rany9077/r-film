@@ -7,7 +7,7 @@ import Image from "next/image";
 import { Post } from "@/types/post";
 import { listenMyPosts } from "@/lib/posts";
 import FadeInSection from "@/components/FadeInSection";
-import {ChevronDown, ChevronRight, Plus } from "lucide-react";
+import {ChevronDown, Plus } from "lucide-react";
 
 import {
     PRODUCT_LINEUP,
@@ -39,15 +39,13 @@ export default function Main() {
         return () => unsub && unsub();
     }, []);
 
-    // 시공 사례 갤러리용 이미지 리스트
-    const galleryImages = useMemo(() => {
-        const urls =
-            posts
-                ?.flatMap((p) => p.imageUrls || [])
-                .filter((url): url is string => !!url && url.trim().length > 0) ?? [];
-
-        const unique = Array.from(new Set(urls)); // 중복 제거
-        return unique.slice(0, 4); // 최대 4개만 노출
+    // 시공 사례 이미지
+    const featuredPosts = useMemo(() => {
+        if (!posts) return [];
+        // 이미지가 있는 글만 골라서 최대 6개
+        return posts
+            .filter((p) => (p.imageUrls && p.imageUrls.length > 0))
+            .slice(0, 6);
     }, [posts]);
 
     const [form, setForm] = useState({
@@ -269,12 +267,6 @@ export default function Main() {
                                             <div className="inline-flex items-center rounded-full bg-purple-50 px-3 py-1 text-[12px] font-medium text-[#701eff] mb-3">
                                                 {item.tag}
                                             </div>
-                                            {/*<button*/}
-                                            {/*    type="button"*/}
-                                            {/*    className="w-full text-sm sm:text-md rounded-full bg-[#7c49d4] text-white py-2 font-medium hover:bg-[#701eff] transition-colors"*/}
-                                            {/*>*/}
-                                            {/*    {item.cta}*/}
-                                            {/*</button>*/}
                                         </div>
                                     </div>
                                 </article>
@@ -324,60 +316,65 @@ export default function Main() {
                 <FadeInSection>
                     <section className="py-20 lg:py-28" id="products">
                         <header className="text-center mb-6 sm:mb-8 px-4">
-                            <h3>시공 사례</h3>
-                            <p>
-                                다양한 공간에서 완성된 아름다운 변화를 확인해보세요.
-                            </p>
+                            <div>
+                                <h3>시공 사례</h3>
+                                <p>
+                                    다양한 공간에서 완성된 아름다운 변화를 확인해보세요.
+                                </p>
+                            </div>
                         </header>
 
-                        {galleryImages.length === 0 ? (
+                        {featuredPosts.length === 0 ? (
                             <div
-                                className="rounded-xl bg-white border border-dashed border-gray-300 py-10 text-center text-sm text-gray-500">
-                                아직 등록된 작업 이미지가 없습니다.
+                                className="mx-4 rounded-xl bg-white border border-dashed border-gray-300 py-10 text-center text-sm text-gray-500">
+                                아직 등록된 시공 스토리가 없습니다.
                                 <br/>
-                                작업 일지가 쌓이면 실제 시공 사진들이 자동으로 노출됩니다.
+                                작업 일지가 쌓이면 최신 시공 사례들이 이곳에 자동으로 노출됩니다.
                             </div>
                         ) : (
-                            <div className="grid gap-3 sm:gap-4 grid-cols-2">
-                                {galleryImages.map((src, idx) => (
-                                    <figure
-                                        key={src + idx}
-                                        className="relative overflow-hidden rounded-xl bg-gray-100 shadow-sm"
-                                    >
-                                        <div className="relative h-40 sm:h-60 md:h-80">
-                                            <Image
-                                                src={src}
-                                                alt={`시공 사례 이미지 ${idx + 1}`}
-                                                fill
-                                                sizes="(max-width: 640px) 100vw,
-                                                 (max-width: 1024px) 50vw,
-                                                 33vw"
-                                                className="object-cover transition-transform duration-500 hover:scale-[1.03]"
-                                            />
+                            <>
+                                <div className="px-4 grid gap-4">
+                                    {featuredPosts[3] && featuredPosts[4] && (
+                                        <div className="px-4 grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                            {/* 왼쪽 카드 */}
+                                            <Link
+                                                href="/log"
+                                                className="group relative overflow-hidden rounded-xl text-white min-h-[300px] sm:min-h-[600px]"
+                                            >
+                                                <div className="absolute inset-0">
+                                                    <Image
+                                                        src={featuredPosts[3].imageUrls?.[0] || "/main_v2.jpg"}
+                                                        alt={featuredPosts[3].title}
+                                                        fill
+                                                        sizes="(max-width: 768px) 100vw, 50vw"
+                                                        className="object-cover group-hover:scale-[1.06] transition-transform duration-700 scale-[1.04]"
+                                                    />
+                                                </div>
+                                                <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-black/20 to-transparent" />
+                                            </Link>
+
+                                            {/* 오른쪽 카드 */}
+                                            <Link
+                                                href="/log"
+                                                className="group relative overflow-hidden rounded-xl text-white min-h-[300px] sm:min-h-[600px]"
+                                            >
+                                                <div className="absolute inset-0">
+                                                    <Image
+                                                        src={featuredPosts[4].imageUrls?.[0] || "/main_v2.jpg"}
+                                                        alt={featuredPosts[4].title}
+                                                        fill
+                                                        sizes="(max-width: 768px) 100vw, 50vw"
+                                                        className="object-cover group-hover:scale-[1.06] transition-transform duration-700 scale-[1.04]"
+                                                    />
+                                                </div>
+                                                <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-black/20 to-transparent" />
+                                            </Link>
                                         </div>
-                                    </figure>
-                                ))}
-                            </div>
+                                    )}
+
+                                </div>
+                            </>
                         )}
-                        <div className="mt-8 flex justify-center">
-                            <Link
-                                href="/log"
-                                className="
-                                  inline-flex items-center gap-1.5
-                                  px-5 py-2.5
-                                  text-sm font-medium
-                                  rounded-full
-                                  border border-gray-300
-                                  text-gray-700
-                                  bg-white
-                                  hover:bg-gray-50 hover:border-gray-400
-                                  transition-all duration-200
-                                "
-                            >
-                                더 보기
-                                <ChevronRight size={16} strokeWidth={2} />
-                            </Link>
-                        </div>
                     </section>
                 </FadeInSection>
 
