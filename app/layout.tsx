@@ -9,7 +9,7 @@ const SITE_URL = "https://ran-film.com";
 const SITE_NAME = "R.FILM";
 const SITE_TITLE = "란 필름 | R.FILM - 인테리어 필름 스튜디오";
 const SITE_DESCRIPTION =
-    "문짝·싱크대·가구·몰딩 등 집안 전체를 깔끔하게 리폼하는 인테리어 필름 스튜디오 란 필름 | R.FILM 입니다. 과하지 않은 디자인과 견고한 마감으로 자연스러운 공간 변화를 제공합니다.";
+    "문짝·싱크대·가구를 정밀한 시공으로 리폼하는 인테리어 필름 전문 스튜디오 란 필름 | R.FILM";
 
 export const metadata: Metadata = {
     metadataBase: new URL(SITE_URL),
