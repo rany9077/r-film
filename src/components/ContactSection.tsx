@@ -3,7 +3,7 @@
 import React, { useEffect, useState } from "react";
 import { ChevronDown } from "lucide-react";
 import { getSupabaseClient } from "@/lib/supabaseClient";
-import toast, { Toaster } from "react-hot-toast";
+import toast from "react-hot-toast";
 
 export default function ContactSection() {
     const [form, setForm] = useState({
@@ -92,7 +92,6 @@ export default function ContactSection() {
 
     return (
         <section className="mx-auto mt-8">
-            <Toaster position="top-center" />
 
             <div className="rounded-2xl border border-gray-200 bg-white shadow-sm">
                 <div className="flex items-center gap-2 px-5 py-4 border-b border-gray-100">

@@ -17,7 +17,7 @@ import {
 } from "@/constants/mainPage";
 import {RollingNumber} from "@/components/RollingNumber";
 import {getSupabaseClient} from "@/lib/supabaseClient";
-import toast, {Toaster} from "react-hot-toast";
+import toast from "react-hot-toast";
 
 const AUTHOR_UID = process.env.NEXT_PUBLIC_ADMIN_UID;
 
@@ -473,7 +473,6 @@ export default function Main() {
                         id="contact"
                         className="relative overflow-hidden bg-gradient-to-r from-[#7c49d4] to-[#701eff] text-white py-20 lg:py-28"
                     >
-                        <Toaster position="top-center" />
 
                         <div className="flex center flex-col md:flex-row md:justify-between gap-8">
                             {/* 왼쪽 안내 텍스트 */}
