@@ -17,6 +17,7 @@ import {
 } from "@/constants/mainPage";
 import {RollingNumber} from "@/components/RollingNumber";
 import {getSupabaseClient} from "@/lib/supabaseClient";
+import toast, {Toaster} from "react-hot-toast";
 
 const AUTHOR_UID = process.env.NEXT_PUBLIC_ADMIN_UID;
 
@@ -60,7 +61,6 @@ export default function Main() {
     const [busy, setBusy] = useState(false);
     const [done, setDone] = useState(false);
 
-    // 4초 뒤 메시지 자동 숨김
     useEffect(() => {
         if (done) {
             const timer = setTimeout(() => setDone(false), 4000);
@@ -68,38 +68,49 @@ export default function Main() {
         }
     }, [done]);
 
+    /** 유효성 검사 함수 */
+    const validateForm = () => {
+        if (!form.name.trim()) {
+            toast.error("이름을 입력해주세요.");
+            return false;
+        }
+        if (!form.phone.trim()) {
+            toast.error("연락처를 입력해주세요.");
+            return false;
+        }
+        return true;
+    };
+
     async function onSubmit(e: React.FormEvent) {
         e.preventDefault();
         if (form.honey) return;
-        if (!form.name.trim() || !form.phone.trim()) {
-            alert("이름과 연락처를 입력해주세요.");
-            return;
-        }
+
+        if (!validateForm()) return;
 
         const supabase = getSupabaseClient();
         if (!supabase) {
             console.error("[ContactSection] Supabase client is not available");
-            alert("문의 저장에 문제가 발생했습니다. 잠시 후 다시 시도해주세요.");
+            toast.error("문의 저장에 문제가 발생했습니다. 잠시 후 다시 시도해주세요.");
             return;
         }
 
         try {
             setBusy(true);
-            const {error} = await supabase.from("inquiries").insert({
+
+            const { error } = await supabase.from("inquiries").insert({
                 name: form.name.trim(),
                 phone: form.phone.trim() || null,
-                kakao_id: form.kakaoId.trim() || null, // 컬럼명을 kakao_id 로 가정
+                kakao_id: form.kakaoId.trim() || null,
                 message: form.message.trim(),
                 budget: form.budget.trim() || null,
                 space_type: form.spaceType,
                 status: "new",
-                // created_at 은 DB 디폴트 now() 로 두면 생략 가능
                 created_at: new Date().toISOString(),
             });
 
             if (error) {
                 console.error("[ContactSection] insert error", error);
-                alert("문의 접수에 실패했습니다. 잠시 후 다시 시도해주세요.");
+                toast.error("문의 접수에 실패했습니다. 다시 시도해주세요.");
                 return;
             }
 
@@ -115,7 +126,7 @@ export default function Main() {
             });
         } catch (err) {
             console.error(err);
-            alert("문의 접수에 실패했습니다. 잠시 후 다시 시도해주세요.");
+            toast.error("문의 접수 중 오류가 발생했습니다.");
         } finally {
             setBusy(false);
         }
@@ -462,6 +473,8 @@ export default function Main() {
                         id="contact"
                         className="relative overflow-hidden bg-gradient-to-r from-[#7c49d4] to-[#701eff] text-white py-20 lg:py-28"
                     >
+                        <Toaster position="top-center" />
+
                         <div className="flex center flex-col md:flex-row md:justify-between gap-8">
                             {/* 왼쪽 안내 텍스트 */}
                             <div>
@@ -530,7 +543,6 @@ export default function Main() {
                                                     })
                                                 }
                                                 placeholder="이름을 입력해주세요."
-                                                required
                                             />
                                         </div>
                                         <div>
@@ -548,7 +560,6 @@ export default function Main() {
                                                 }
                                                 placeholder="010-1234-5678"
                                                 inputMode="tel"
-                                                required
                                             />
                                         </div>
                                     </div>

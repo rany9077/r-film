@@ -1,9 +1,9 @@
-// src/components/ContactSection.tsx
 "use client";
 
 import React, { useEffect, useState } from "react";
 import { ChevronDown } from "lucide-react";
 import { getSupabaseClient } from "@/lib/supabaseClient";
+import toast, { Toaster } from "react-hot-toast";
 
 export default function ContactSection() {
     const [form, setForm] = useState({
@@ -18,7 +18,7 @@ export default function ContactSection() {
     const [busy, setBusy] = useState(false);
     const [done, setDone] = useState(false);
 
-    // 4초 뒤 메시지 자동 숨김
+    // 4초 뒤 완료 메시지 자동 숨김
     useEffect(() => {
         if (done) {
             const timer = setTimeout(() => setDone(false), 4000);
@@ -26,38 +26,49 @@ export default function ContactSection() {
         }
     }, [done]);
 
+    /** 유효성 검사 함수 */
+    const validateForm = () => {
+        if (!form.name.trim()) {
+            toast.error("이름을 입력해주세요.");
+            return false;
+        }
+        if (!form.phone.trim()) {
+            toast.error("연락처를 입력해주세요.");
+            return false;
+        }
+        return true;
+    };
+
     async function onSubmit(e: React.FormEvent) {
         e.preventDefault();
         if (form.honey) return;
-        if (!form.name.trim() || !form.phone.trim()) {
-            alert("이름과 연락처를 입력해주세요.");
-            return;
-        }
+
+        if (!validateForm()) return;
 
         const supabase = getSupabaseClient();
         if (!supabase) {
-            console.error("[ContactSection] Supabase client is not available");
-            alert("문의 저장에 문제가 발생했습니다. 잠시 후 다시 시도해주세요.");
+            console.error("[ContactSection] Supabase client unavailable");
+            toast.error("문의 저장에 문제가 발생했습니다. 잠시 후 다시 시도해주세요.");
             return;
         }
 
         try {
             setBusy(true);
+
             const { error } = await supabase.from("inquiries").insert({
                 name: form.name.trim(),
-                phone: form.phone.trim() || null,
-                kakao_id: form.kakaoId.trim() || null, // 컬럼명을 kakao_id 로 가정
+                phone: form.phone.trim(),
+                kakao_id: form.kakaoId.trim() || null,
                 message: form.message.trim(),
                 budget: form.budget.trim() || null,
                 space_type: form.spaceType,
                 status: "new",
-                // created_at 은 DB 디폴트 now() 로 두면 생략 가능
                 created_at: new Date().toISOString(),
             });
 
             if (error) {
                 console.error("[ContactSection] insert error", error);
-                alert("문의 접수에 실패했습니다. 잠시 후 다시 시도해주세요.");
+                toast.error("문의 접수에 실패했습니다. 다시 시도해주세요.");
                 return;
             }
 
@@ -73,7 +84,7 @@ export default function ContactSection() {
             });
         } catch (err) {
             console.error(err);
-            alert("문의 접수에 실패했습니다. 잠시 후 다시 시도해주세요.");
+            toast.error("문의 접수 중 오류가 발생했습니다.");
         } finally {
             setBusy(false);
         }
@@ -81,6 +92,8 @@ export default function ContactSection() {
 
     return (
         <section className="mx-auto mt-8">
+            <Toaster position="top-center" />
+
             <div className="rounded-2xl border border-gray-200 bg-white shadow-sm">
                 <div className="flex items-center gap-2 px-5 py-4 border-b border-gray-100">
                     <h2 className="text-lg md:text-xl font-semibold">📩문의하기</h2>
@@ -111,6 +124,7 @@ export default function ContactSection() {
                             className="hidden"
                         />
 
+                        {/* 이름/연락처 */}
                         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                             <div>
                                 <label className="block text-xs text-gray-500 mb-1">
@@ -122,7 +136,6 @@ export default function ContactSection() {
                                     onChange={(e) =>
                                         setForm({ ...form, name: e.target.value })
                                     }
-                                    required
                                 />
                             </div>
                             <div>
@@ -137,11 +150,11 @@ export default function ContactSection() {
                                     }
                                     placeholder="010-1234-5678"
                                     inputMode="tel"
-                                    required
                                 />
                             </div>
                         </div>
 
+                        {/* 카카오/예산 */}
                         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                             <div>
                                 <label className="block text-xs text-gray-500 mb-1">
@@ -170,6 +183,7 @@ export default function ContactSection() {
                             </div>
                         </div>
 
+                        {/* 공간 유형 */}
                         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                             <div>
                                 <label className="block text-xs text-gray-500 mb-1">
@@ -197,6 +211,7 @@ export default function ContactSection() {
                             </div>
                         </div>
 
+                        {/* 문의 내용 */}
                         <div>
                             <label className="block text-xs text-gray-500 mb-1">
                                 문의 내용
@@ -210,6 +225,7 @@ export default function ContactSection() {
                             />
                         </div>
 
+                        {/* 버튼 */}
                         <div className="flex items-center gap-2 pt-1">
                             <button
                                 disabled={busy}
@@ -220,8 +236,7 @@ export default function ContactSection() {
                         </div>
 
                         <p className="text-[11px] text-gray-400 pt-1">
-                            *입력하신 정보는 문의 응대 목적에만 사용되며, 처리 후 안전하게
-                            보관됩니다.
+                            *입력하신 정보는 문의 응대 목적에만 사용되며, 처리 후 안전하게 보관됩니다.
                         </p>
                     </form>
                 </div>
